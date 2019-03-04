@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Radiance light trends</title>
+		<meta http-equiv="content-type" content="text/html;charset=UTF-8" />
+		<meta id='viewport' content='width=device-width, initial-scale=1' name='viewport'/>
+		<link rel="stylesheet" href="index.css" type="text/css" />	
+		<link rel="stylesheet" href="node_modules/jstree/dist/themes/default/style.min.css" />
+		<link rel="stylesheet" href="node_modules/chosen-js/chosen.min.css" />
+		<link rel="stylesheet" href="node_modules/jquery-ui-bundle/jquery-ui.min.css" />
+		<link rel="stylesheet" href="node_modules/hopscotch/dist/css/hopscotch.min.css" />	
+		<link rel="stylesheet" href="node_modules/datatables/media/css/jquery.dataTables.min.css" />
+		
+		<!-- NEEDED FOR IE11 SUPPORT -->
+		<script src="https://unpkg.com/formdata-polyfill"></script>
+		<!-- NEEDED FOR IE11 SUPPORT -->
+	</head>
+	<body>		
+		<div id="topBar_statisticsContent" class="topBar_modal">
+			<div id="topBar_statisticsContentWindow" class="topBar_modal-content">
+				<div class="ol-popup-closer fsContent_closer"></div>
+				<h3 id="topBar_statisticsContent_label" style="margin: 5px 0px 10px 25px;" class="label">Statistics</h3>
+				<div class="label" style="padding: 0px 10px 20px 25px;text-align: justify;font: 15px/20px arial;height: calc(100% - 55px);overflow-y: auto;margin-right: 7px;">			
+					<div id="usageStatistics_label_cont">
+					<div id="usageStatistics_label" class="label" style="padding-top: 10px;display:inline-block;">Requests statistics aggregated by</div>
+						<select id="usageStatistics_select">
+								<option id="usageStatistics_select_1" value="day" class="label">day</option>
+								<option id="usageStatistics_select_2" value="week" class="label">week</option>
+								<option id="usageStatistics_select_3" value="month" class="label" selected>month</option>
+								<option id="usageStatistics_select_4" value="year" class="label">year</option>
+						</select>
+					</div>
+					<table id="usageStatistics_data" class="display" width="100%">
+						<thead id='statisticsHeader'></thead>
+					</table>			
+				</div>
+			</div>
+		</div>
+		
+		<!-- NOT USED ANYMORE -->
+		<div id="topBar_helpContent" class="topBar_modal">
+			<div id="topBar_helpContentWindow" class="topBar_modal-content">			
+				<div class="ol-popup-closer fsContent_closer"></div>
+				<h3 id="topBar_helpContent_label" style="margin: 5px 0px 10px 25px;" class="label">Help</h3>
+				<div class="label" id="helpContent" style="padding: 0px 10px 20px 25px;text-align: justify;font: 15px/20px arial;height: calc(100% - 55px);overflow-y: auto;margin-right: 7px;">
+				</div>			
+			</div>
+		</div>
+		<!-- NOT USED ANYMORE -->
+		
+		<div id="topBar_aboutContent" class="topBar_modal">
+			<div id="topBar_aboutContentWindow" class="topBar_modal-content">
+				<div class="ol-popup-closer fsContent_closer"></div>
+				<h3 id="topBar_aboutContent_label" style="margin: 5px 0px 10px 25px;" class="label">About</h3>
+				<div class="label" id="aboutContent" style="padding: 0px 10px 20px 25px;text-align: justify;font: 15px/20px arial;height: calc(100% - 85px);overflow-y: auto;margin-right: 7px;">
+				</div>
+				<div id="appVersion"></div>
+			</div>
+		</div>
+		
+		<div id="mainContainer">
+			<div id="topBar">
+				<div id="topBar_name"><img src="img/logo.png" /><div id="unlock"></div></div>
+				<div id="topBar_menu_button" class="topBarButtons"></div>
+				<div id="topBar_menu">
+					<div id="topBar_about" class="topBarButtonModal topBarButtons label">About</div>
+					<div id="topBar_help" class="topBarButtonModal topBarButtons label">Help</div>
+					<div id="topBar_statistics" class="topBarButtonModal topBarButtons label">Statistics</div>
+					<div id="topBar_language" class="topBarButtons">
+						<span id="topBar_language_label_1" class="label">Language</span> | 
+						<span id="topBar_language_label_2" class="label">en</span>
+					</div>
+				</div>
+			</div>
+		
+			<div id="map">		
+				<div id="coordinates" class="label" title="Toggle decimal or deg/min/sec"></div>
+				<div id="BingMapsAttribution"><img src="img/BingMapsLogo.png" /></div>				
+				<div id="layerConfigWindow">
+					<div id="layerIcon" title="Layer options">
+						<img id="layerIconImg" src="img/layers.png" alt=""/>
+					</div>
+					<div id="layerConfigWindowContainer">
+						<h3 id="layerConfigWindowContainer_label" class="label">Layer options</h3>	
+
+						<div id="layerBingStyleCont">
+							<div id="layerBing_label" class="label">Base map</div>
+							<select id="layerBing">
+								<option id="layerBing_1" value="LayerBingCanvasDark" class="label" selected>Dark road imagery</option>
+								<option id="layerBing_2" value="LayerBingAerial" class="label" >Aerial imagery</option>
+								<option id="layerBing_3" value="LayerBingRoad" class="label">Road imagery</option>
+							</select>
+						</div>
+						<div id="layerOpacityCtrlCont">
+							<div><span id="opacityCtrl_label" class="label">Lights layer opacity: </span><span id="opacityCtrlValue"></span></div>				
+							<div id="opacityCtrl"></div>
+						</div>
+						<div id="layerStyleCtrlCont">
+							<div id="layerStyle_label" class="label">Lights layer style</div>
+							<select id="layerStyle">
+								<option id="layerStyle_1" value="g1" class="label">Greyscale</option>
+								<option id="layerStyle_2" value="c1" class="label" selected>Color</option>
+								<option id="layerStyle_3" value="cb1" class="label">Color blind</option>
+							</select>
+						</div>			
+						<div id="layerLightsSelection">
+							<div style="height: 30px;">
+								<div id="layerTree_label" class="label" style="    float: left;    padding-top: 6px;">Lights layer</div>
+								<div id="layerGraticuleCtrlCont">
+									<label for="layerGraticuleCtrl" id="layerGraticuleCtrlCont_label" ><span class="label" id="layerGraticuleCtrlContSpan_label">Show grid</span></label>
+									<input class="toggle" type="checkbox" name="color" id="layerGraticuleCtrl">
+								</div>					
+							</div>
+							<div id="layerTree">
+								<ul>
+									<li class="jstree-close" id="dmsp_u_tree" data-jstree='{ "disabled" : true }'><span id="dmsp_u_tree_label" class="label">Raw DMSP</span>
+										<ul></ul>
+									</li>
+									<li class="jstree-close" id="dmsp_c_tree" data-jstree='{ "disabled" : true }'><span id="dmsp_c_tree_label" class="label">Radiance calibrated DMSP</span>
+										<ul></ul>
+									</li>
+									<li class="jstree-open" id="viirs_tree" data-jstree='{ "disabled" : true }'><span id="viirs_tree_label" class="label">VIIRS DNB</span>
+									  <ul>
+										<li class="jstree-open" id="viirs_tree_annual" data-jstree='{ "disabled" : true }'><span id="viirs_tree_annual_label" class="label">Annual</span>
+											<ul></ul>
+										</li >
+										<li id="viirs_tree_monthly" data-jstree='{ "disabled" : true }'><span id="viirs_tree_monthly_label" class="label">Monthly</span>
+											<ul></ul>
+										</li>
+									  </ul>
+									</li>
+								</ul>
+							</div>				
+						</div>
+					</div>
+				</div>
+				<div class="olControlZoom toolBar">	
+					<div class="label" id="zoomInButton" title="Zoom in"></div>
+					<div class="label" id="zoomOutButton" title="Zoom out"></div>
+					<div class="label" id="pixelAnalysisButton" title="Analyse data by selecting a pixel"></div>
+					<div class="label" id="areaAnalysisButton" title="Analyse data by selecting a polygon"></div>
+					<div class="label" id="rulerButton" title="Measure distance"></div>
+					<div class="label" id="tourButton" title="Guided tour"><div style="padding: 4px 0px 0px 9px;">?</div></div>
+					
+				</div>
+				<div class ="label" id="searchCont" title="Search places or enter coordinates in 'lon, lat' (decimal) format.">        
+					<div class="ui-widget">
+						<input class="label" id="searchBox" type="search" placeholder="Search places..." />
+					</div>
+					<div id="searchResult" class="ui-widget"></div>
+				</div>
+				
+				<div id="progressBar"></div>
+				
+				<div id="analysisConfigWindow" class="draggable">
+					<h3 id="analysisConfigWindowContent_label" class="label">Light trend analysis - pixel</h3>
+					<div class="ol-popup-closer" id="analysisConfigWindow_closer"></div>
+					<div id="analysisConfigWindowContent">
+
+						<div class="divpadding" style="padding-top: 10px;">
+							<div id="analysisConfigWindow_click_label" class="label">Click coordinate</div>
+							<div id="analysisConfigWindow_click" class="analysisConfigWindow_coordinates degFormat attributes1"></div>
+							<div id="analysisConfigWindow_click_d" style="display:none;" class="analysisConfigWindow_coordinates degFormat attributes1"></div>
+						</div>
+						
+						<div class="divpadding" style="padding-top: 10px;">
+							<div id="analysisConfigWindow_polygon_tools" class="attributes1">
+								<div id="analysisConfigWindow_polygon_tools_copyToClipboard" title="Copy to clipboard" class="label analysisConfigWindow_polygon_tool"></div>
+								<div id="analysisConfigWindow_polygon_tools_download" title="Download" class="label analysisConfigWindow_polygon_tool"></div>
+								<div id="analysisConfigWindow_polygon_tools_upload" title="Upload" class="label analysisConfigWindow_polygon_tool"></div>
+								<div id="analysisConfigWindow_polygon_tools_upload_input" style="display:none">
+									<input type="file" accept=".txt"/>
+								</div>
+							</div>
+							<div id="analysisConfigWindow_polygon_label" class="label">Polygon coordinates</div>
+							<div id="analysisConfigWindow_polygon" class="attributes1 ui-corner-all" ></div>
+
+						</div>
+						
+						<div class="divpadding">
+							<div id="analysisConfigWindow_centroid_label" class="label">Pixel centroid coordinate</div>
+							<div id="analysisConfigWindow_viirsCentroid" class="analysisConfigWindow_coordinates degFormat attributes1">VIIRS:</div>
+							<div id="analysisConfigWindow_dmspCentroid" class="analysisConfigWindow_coordinates degFormat attributes1">DMSP:</div>
+							<div id="analysisConfigWindow_viirsCentroid_d" style="display: none;" class="analysisConfigWindow_coordinates degFormat attributes1">VIIRS:</div>
+							<div id="analysisConfigWindow_dmspCentroid_d" style="display: none;" class="analysisConfigWindow_coordinates degFormat attributes1">DMSP:</div>
+						</div>
+						
+						<div class="divpadding">
+							<div id="analysisConfigWindow_PolygonCentroid_label" class="label">Polygon centroid coordinate</div>
+							<div id="analysisConfigWindow_PolygonCentroid" class="analysisConfigWindow_coordinates degFormat attributes1"></div>
+							<div id="analysisConfigWindow_PolygonCentroid_d" style="display: none;" class="analysisConfigWindow_coordinates degFormat attributes1">DMSP:</div>
+						</div>
+						
+						<div class="divpadding">
+							<div id="analysisConfigWindow_area_label" class="label">Area covered by selected pixel</div>
+							<div id="analysisConfigWindow_viirsArea" class="defaultTextIndent attributes1"></div>
+							<div id="analysisConfigWindow_dmspArea" class="defaultTextIndent attributes1"></div>
+						</div>
+						
+						<div class="divpadding">
+							<div id="analysisConfigWindow_polygonArea_label" class="label">Polygon area</div>
+							<div id="analysisConfigWindow_polygonArea" class="defaultTextIndent attributes1"></div>
+						</div>
+						
+						<div class="divpadding">
+							<label><span id="analysisConfigWindow_displayYears_label" class="label">Selected year interval</span>:	&nbsp;<span id="analysisConfigWindow_displayYears"></span></label>
+							<div id="analysisConfigWindow_dateIntervalSlider"></div>
+						</div>
+						
+						<div class="divpadding">
+							<label id="analysisConfigWindow_rasterColumn_label" class="label">Satellite</label>
+							<select id="analysisConfigWindow_rasterColumn">
+								<option id="analysisConfigWindow_rasterColumn_1" value="dmsp_u" class="label">Raw DMSP</option>
+								<option id="analysisConfigWindow_rasterColumn_2" value="dmsp_c" class="label">Radiance calibrated DMSP</option>
+								<option id="analysisConfigWindow_rasterColumn_3" value="viirs" class="label" selected>VIIRS DNB</option>
+							</select>
+						</div>			
+						
+						<div id="analysisConfigWindow_dmspOption1_div" style="display:none;" class="divpadding">
+							<div id="analysisConfigWindow_dmspOption1_label" class="label">Satellite series</div>
+							<select id="analysisConfigWindow_dmspOption1" multiple data-placeholder="Choose satellite series (default: all)" class="label"></select>								
+						</div>
+						
+						<div id="analysisConfigWindow_viirsOption1_div" class="analysisConfigWindow_viirsOptions divpadding">
+							<div id="analysisConfigWindow_viirsOption1_label" class="label">Satellite series</div>
+							<select id="analysisConfigWindow_viirsOption1" multiple data-placeholder="Choose satellite series (default: all)" class="label"></select>								
+						</div>				
+						
+						<div id="analysisConfigWindow_viirsOption2_div" class="analysisConfigWindow_viirsOptions divpadding">
+							<div id="analysisConfigWindow_option2_label" class="label">Time period</div>
+							<select id="analysisConfigWindow_viirsOption2">
+								<option id="analysisConfigWindow_viirsOption2_1" value="annual"  class="label">Annual</option>
+								<option id="analysisConfigWindow_viirsOption2_2" value="monthly" class="label" selected>Monthly</option>
+							</select>			
+						</div>
+
+						
+						<div id="analysisConfigWindow_option3_div" class="analysisConfigWindow_viirsOptions divpadding">
+							<div id="analysisConfigWindow_option3_label" class="label">Months</div>
+							<select id="analysisConfigWindow_viirsOption3" multiple data-placeholder="Choose months (default: all)" class="label">
+								<option id="analysisConfigWindow_viirsOption3_1" value="01" class="label">January</option>
+								<option id="analysisConfigWindow_viirsOption3_2" value="02" class="label">February</option>
+								<option id="analysisConfigWindow_viirsOption3_3" value="03" class="label">March</option>
+								<option id="analysisConfigWindow_viirsOption3_4" value="04" class="label">April</option>
+								<option id="analysisConfigWindow_viirsOption3_5" value="05" class="label">May</option>
+								<option id="analysisConfigWindow_viirsOption3_6" value="06" class="label">June</option>
+								<option id="analysisConfigWindow_viirsOption3_7" value="07" class="label">July</option>
+								<option id="analysisConfigWindow_viirsOption3_8" value="08" class="label">August</option>
+								<option id="analysisConfigWindow_viirsOption3_9" value="09" class="label">September</option>
+								<option id="analysisConfigWindow_viirsOption3_10" value="10" class="label">October</option>
+								<option id="analysisConfigWindow_viirsOption3_11" value="11" class="label">November</option>
+								<option id="analysisConfigWindow_viirsOption3_12" value="12" class="label">December</option>
+							</select>				
+						</div>
+			
+						<div id="analysisConfigWindow_areaOption1_div" class="divpadding">
+							<div id="analysisConfigWindow_areaOption1_label" class="label">Aggregate function</div>
+							<select id="analysisConfigWindow_areaOption1">
+								<option id="analysisConfigWindow_areaOption1_1" value="sum"  class="label" selected>Summed radiance</option>
+								<option id="analysisConfigWindow_areaOption1_2" value="mean" class="label">Average radiance</option>
+							</select>			
+						</div>
+						
+						<div id="analysisConfigWindow_mask_div" class="divpadding">
+							<div id="analysisConfigWindow_mask_label" class="label">Mask</div>
+							<select id="analysisConfigWindow_mask">
+								<option id="analysisConfigWindow_mask_1" value="none" class="label" selected>None</option>
+								<option id="analysisConfigWindow_mask_2" value="mask_201500" class="label">2015 vcm-orm-ntl</option>
+								<option id="analysisConfigWindow_mask_3" value="mask_201600" class="label">2016 vcm-orm-ntl</option>
+							</select>			
+						</div>
+						
+						<div id="generateChartButton_div">
+							<button id="analysisConfigWindow_generateChartButton" class="label">Generate trendline chart</button>
+							<div id="loadingIconGenerateChart">
+								<object data="img/loading.svg" type="image/svg+xml"></object>
+							</div>
+							<div id="resultError" class="attributes1"></div>
+						</div> 	
+					
+					</div>
+				</div>
+				
+				<div id="chartWindow" class="draggable">
+					<h3 id="chartWindowContent_label" class="label">Chart</h3>
+					<div class="ol-popup-closer" id="chartWindow_closer"></div>		
+					<div id="chartWindowContent">
+					
+						<div id="canvasContainer" onclick="event.stopPropagation();" class="chart">
+							<canvas id="canvas" class="chart"></canvas>
+						</div>
+						<div>
+							<div id="chartNumbersContainer">									
+								<fieldset class="fieldSet">
+									<legend><div id="chartNumbersTitle_label" class="label">Trendline attributes</div></legend>
+										<div id="chartNumbers" class="defaultTextIndent attributes1"></div>
+								</fieldset>
+							</div>
+							
+							<div id="chartTrendlineTypeContainer" title="Change trendline type" class="label">									
+								<fieldset class="fieldSet">
+									<legend><div id="chartTrendlineType_label" class="label">Trendline type</div></legend>								
+										<div id="chartTrendlineType" class="defaultTextIndent attributes1">
+											<input id="chartTrendlineType_N" type="radio" name="t_type" value="none">&nbsp;<span id="chartTrendlineType0_label" class="label">None</span><br>
+											<input id="chartTrendlineType_E" type="radio" name="t_type" value="exponential" checked>&nbsp;<span id="chartTrendlineType1_label" class="label">Exponential</span><br>
+											<input id="chartTrendlineType_L" type="radio" name="t_type" value="linear">&nbsp;<span id="chartTrendlineType2_label" class="label">Linear</span><br>
+										</div>
+								</fieldset>
+							</div>
+							
+							<div id="exportContainer">
+								<fieldset class="fieldSet">
+									<legend><div id="exportTitle_label" class="label">Export options</div></legend>							
+									<div id="exportContent" class="defaultTextIndent attributes1" style="padding-top: 5px;">
+										
+										<button id="export_button" class="label ui-button ui-corner-all ui-widget">Export</button>
+										
+										<select id="exportItem">
+											<option id="exportItem_1" class="label" value="chart" selected>chart</option>
+											<option id="exportItem_2" class="label" value="data">data</option>	
+										</select>
+										&nbsp;&nbsp;
+										
+										<div class="label" id="exportArrow" style="overflow: hidden;display: inline-block;background-image: url(img/arrow.png);background-size: contain;background-repeat: no-repeat;">
+											<div id="loadingIconExport">
+												<object data="img/loading.svg" type="image/svg+xml"></object>
+											</div>																		
+										</div>
+										
+										<select id="exportFormat">
+											<option value="svg" selected>svg (vector)</option>
+											<option value="eps">eps (vector)</option>
+											<option value="png">png (raster)</option>
+											<option value="pdf">pdf (vector)</option>	
+										</select><br/>
+										
+									</div>
+								</fieldset>
+								
+
+							</div>
+
+						</div>
+
+					
+					</div>
+				</div>
+			</div>		
+		</div>
+	</body>
+</html>

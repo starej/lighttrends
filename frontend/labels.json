@@ -1,0 +1,1082 @@
+{
+	"en": {
+		"months": ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+		"topBar_about": {
+			"html": "About"
+		},
+		"topBar_help": {
+			"html": "Help"
+		},
+		"topBar_statistics": {
+			"html": "Statistics"
+		},
+		"topBar_language_label_1": {
+			"html": "Language"
+		},
+		"topBar_statisticsContent_label": {
+			"html": "Statistics"
+		},
+		"usageStatistics_label": {
+			"html": "Requests statistics aggregated by"
+		},	
+		"topBar_helpContent_label": {
+			"html": "Help"
+		},
+		"topBar_aboutContent_label": {
+			"html": "About"
+		},
+		"aboutContent": {
+			"html": "<p><span>This web application allows you to examine changes in nighttime light emissions (nearly) worldwide, from 1992 up until last month. This text explains where the data comes from, what need to know about the data sources to understand the charts you generate, and who developed the app. If you haven’t already done so, you may wish to use our <a href=\"#\" onclick=\"$('#topBar_aboutContent').fadeOut(); $('#tourButton').click(); return false;\">tutorial</a></span> <span>to get started looking at the data quickly.</span></p><p><span>The emissions data come from two satellite sensors. From 1992 to 2013, data comes from the Operational Linescan System of the Defense Meteorological Satellite Program (DMSP) satellites. From 2012 to the present, data comes from the Day/Night Band of the </span><span>Visible Infrared Imaging Radiometer Suite instrument</span><span> (VIIRS DNB). The instruments have a number of <span class=MsoHyperlink><a target=\"_blank\" href=\"https://dx.doi.org/10.3390/rs5126717\">important differences</a></span>, and for that reason it is not possible to have a single record running from 1992 to today.</span></p><p><span>Both of the satellite instruments scanned (nearly) the entire Earth each night, but the DMSP typically passed overhead around 8:30 pm, while VIIRS DNB passes over much later, around 1:30 am. The Earth is brightly illuminated by moonlight when the satellites pass over several days per month, and on any given night, much of the Earth is obscured by cloud. For more than two decades, the team of Chris Elvidge and Kimberly Baugh have produced global annual satellite observed nighttime lights data products. They were based initially at the U.S. National Oceanic and Atmospheric Adminsitration’s National Geophysical Data Center in Boulder, Colorado. In 2019 they relocated the Payne Institute at the Colorado School of Mines, Golden, Colorado. A description of the VIIRS DNB night lights product used in this application is available <span class=MsoHyperlink><a target=\"_blank\" href=\"https://doi.org/10.1080/01431161.2017.1342050\">here</a></span>. The data used in the app can be accessed from their group’s <span class=MsoHyperlink><a target=\"_blank\" href=\"https://ngdc.noaa.gov/eog/index.html\">website</a></span>.</span></p><p><span>&nbsp;</span></p><p><b><span>About the DMSP</span></b></p><p><span>Observing night lights was not the main purpose of the DMSP, and the 1992-2013 data record therefore have a number of limitations. The instrument was not calibrated, and therefore the results are displayed in “digital numbers” ranging from 0-63. In city centers, the satellite data was often “saturated” (too bright to measure), and therefore each year will just show a value of 63. The team of Chris Elvidge and Kim Baugh worked to produce approximately radiometrically calibrated data for specific years, and this can be accessed by selecting “Radiance Calibrated DMSP” on the “satellite” dropdown menu.</span></p><p><span>The spatial resolution of the satellite was several kilometers, and is in fact larger than the pixels displayed by the app. Because the overpass time of the DMSP was so early in the evening, at high latitudes most of the data is acquired during winter. Care should therefore be taken in comparing results from high latitude countries to lower latitude countries.</span></p><p><span>&nbsp;</span></p><p><b><span>About VIIRS DNB</span></b></p><p><span>The VIIRS DNB was the first satellite instrument intentionally designed to image human lights on the worldwide scale, and is therefore a major <span class=MsoHyperlink><a target=\"_blank\" href=\"https://dx.doi.org/10.3390/rs5126717\">improvement over DMSP</a></span>. The satellite resolution is about 750 meters (or 0.5 square km). This data has been reprojected onto a grid, so in some places (especially high latitudes) the pixels are displayed at finer detail than the satellite can actually see. Because of the higher data quality, it is possible to display data on a monthly timescale.</span></p><p><span>&nbsp;</span></p><p><b><span>Limitations of satellite data</span></b></p><p><span>Night lights data can tell many interesting stories, but it is important to keep in mind exactly what it represents. For example, the data presented here should not be understood as (directly) representing energy consumption, community wealth, or light pollution. While each of those are often related to light emissions, the satellite does not measure them directly.</span></p><p><span>The satellites measure light in the spectral range of about 500-900 nm. This is not the same as human vision, which runs from 400-700 nm. The satellite data is therefore less sensitive to white light than the human eye, and has sensitivity at infrared wavelengths that the human eye cannot see. For this reason, when communities switch from orange high pressure sodium lamps to white LED, the satellites <span class=MsoHyperlink><a target=\"_blank\" href=\"http://dx.doi.org/10.1126/sciadv.1701528\">often report a drop in brightness</a></span> even if a human would say that the white LEDs look brighter. Since cities worldwide are changing to white LEDs, it is important to keep this in mind.</span></p><p><span>Even far away from artificial lights, the world is not entirely dark. It is lit by starlight, aurora light, and “airglow”, and the satellite has some sensitivity to this light, especially around the polar regions. In areas that are mainly unlit, changes in airglow or the satellite calibration may affect all of the pixels similarly. Fires can also produce very bright temporary light emissions, and false signals caused by solar radiation appear over a certain region near the southern. It is therefore not advisable to include large areas that have little or no installed lighting in your analyses. To some extent, this problem can be reduced by applying a mask. For example, if you select “2016 vcm-orm-ntl”, this will remove areas that were not lit consistently during 2016.</span></p><p><span>The emissions observed from any given area change from month to month for a number of reasons. To some extent, and over the long term, this is due to actual changes in the installed lighting. But on shorter time scales, <span class=MsoHyperlink><a target=\"_blank\" href=\"https://dx.doi.org/10.3390/rs10121964\">variation is due to a number of other reasons</a></span>, such as the imaging angles that made up the monthly composite. Many areas, especially those at high latitudes, also display seasonal cycles. In areas that receive snow, it is advisable to restrict analyses to months that are unlikely to have snow on the ground. In addition, at high latitudes there is no data during the summer due to stray light shining on the satellite sensor. </span></p><p><span>Some of the light emitted upwards can scatter off of molecules and particles in the atmosphere, producing “skyglow”, a type of light pollution. Because of this, the satellites often report light emissions from unlit areas near bright light sources. This can be very easily seen in cities that are on coasts. Because this light is regularly present, it will not entirely be removed by the “vcm-orm-ntl” mask. You may also be interested in viewing a <span class=MsoHyperlink><a target=\"_blank\" href=\"https://www.lightpollutionmap.info\">map of predicted clear night sky brightness</a></span> (see “ATLAS 2015” on that page).</span></p><p><span>&nbsp;</span></p><p><b><span>Additional information</span></b></p><p><span>Analyzing large areas can take several seconds, and during this time it will not be possible for other webapp users to make an analysis request. For this reason, we currently limit analyses to 5,000 square kilometers.</span></p><p><span>&nbsp;</span></p><p><b><span>Funding and development</span></b></p><p><span>This web application was partially funded through the European Union’s Horizon 2020 research and innovation programme under grant agreement no. 689443 via project <span class=MsoHyperlink><a target=\"_blank\" href=\"http://www.geoessential.eu/\">GEOEssential</a></span>, with additional funding and project direction from the <span class=MsoHyperlink><a target=\"_blank\" href=\"https://www.gfz-potsdam.de\">GFZ German Research Centre for Geosciences</a></span>. The code underlying the web application is available under an <a>EUPL license</a>.</span></p><p><span>&nbsp;</span></p><p><span>The application was programmed by <a href=\"&#x6d;&#x61;&#x69;&#x6c;&#x74;&#x6f;&#x3a;&#x73;&#x74;&#x61;&#x72;&#x65;&#x6a;&#x40;&#x74;&#x2d;&#x32;&#x2e;&#x6e;&#x65;&#x74;&#x3f;&#x73;&#x75;&#x62;&#x6a;&#x65;&#x63;&#x74;&#x3d;&#x4c;&#x69;&#x67;&#x68;&#x74;&#x74;&#x72;&#x65;&#x6e;&#x64;&#x73;&#x20;&#x61;&#x70;&#x70;&#x6c;&#x69;&#x63;&#x61;&#x74;&#x69;&#x6f;&#x6e;\" target=\"_top\">Deneb, Geoinformation solutions, Jurij Stare s.p.</a></span></p><div style='text-align:center;'><img class='logos' src='img/logo_eu.jpg'/><a href='http://www.geoessential.eu/' target='_blank'><img class='logos' src='img/logo_geoessential.png'/></a><a href='https://www.gfz-potsdam.de/en/home/' target='_blank'><img class='logos' src='img/logo_gfz.jpg'/></a></div>"
+		},
+		"helpContent": {
+			"html": "Duo at nobis clita iudicabit, ut nonumes lobortis consectetuer usu. Justo legendos gloriatur nec id, ex perpetua splendide sit, nobis nostro ei vix. Pro stet iriure prompta no, facilisi hendrerit ea mei. Cu vel diam vivendo, sed partem graecis adipiscing eu. Pri ut hinc quot, dicam facilis moderatius at per. Clita consul nostrum eu sea, id graeco vocibus intellegebat mel. <br/><br/> His nobis apeirian ei, cu elit mazim vis. Impetus fabellas ea mel. Has an oporteat gloriatur, habeo porro dignissim quo id. Quo postea omnium efficiendi te, cu albucius pertinax mel. Mea et velit veritus partiendo, ea tempor meliore mei. Aperiri volumus no ius, cu salutandi explicari sit. <br/><br/> Congue quodsi constituam nam id, ut vis soleat vocent mnesarchum. Per gubergren euripidis vituperata cu. Mel dico iuvaret fuisset cu, antiopam consectetuer vis ex. Eu quo oblique platonem oportere, phaedrum electram vulputate usu at, blandit eloquentiam et vix. Accusam efficiendi ut eam, commodo omittantur eu quo, ut sea lorem utamur graecis. Et dolorem scaevola mediocrem mea, eum ignota eirmod aliquip ei. <br/><br/> Nobis munere aperiam mea eu. Viris urbanitas sit te. Wisi natum vim ea. Zril consul id quo, labores mnesarchum vis cu, cu omittam torquatos efficiendi cum. Debet voluptua mei cu, pri homero deleniti te, et eam putant pericula adipiscing. <br/><br/> Dolores contentiones interpretaris eum cu. In eos latine discere aliquid, principes consetetur cu eum. Per ea vero modus feugiat, ne apeirian salutandi nam. Te cum eius eirmod maiestatis, utamur eligendi cum et, vim accusam eloquentiam eu. Vis te iudico legendos appellantur, vix justo viris pertinacia cu.   "
+		},
+		"zoomInButton": {
+			"title": "Zoom in"
+		},
+		"zoomOutButton": {
+			"title": "Zoom out"
+		},
+		"pixelAnalysisButton": {
+			"title": "Analyse data by selecting a pixel"
+		},
+		"areaAnalysisButton": {
+			"title": "Analyse data by selecting an area"
+		},
+		"rulerButton": {
+			"title": "Measure distance and heading"
+		},
+		"tourButton": {
+			"title": "Guided tour"
+		},		
+		"analysisConfigWindowContent_label": {
+			"html": ["Light trend analysis - pixel", "Light trend analysis - area"]
+		},
+		"analysisConfigWindow_click_label": {
+			"html": "Click coordinate"
+		},
+		"analysisConfigWindow_polygon_label": {
+			"html": "Polygon coordinates"
+		},
+		"analysisConfigWindow_PolygonCentroid_label": {
+			"html": "Polygon centroid coordinate"
+		},
+		"analysisConfigWindow_polygonArea_label": {
+			"html": "Polygon area"
+		},
+		"analysisConfigWindow_polygonArea_selected_label": {
+			"html": "selected"
+		},
+		"analysisConfigWindow_polygon_tools_copyToClipboard": {
+			"title": "Copy to clipboard"
+		},
+		"analysisConfigWindow_polygon_tools_download": {
+			"title": "Download polygon in WKT format"
+		},
+		"analysisConfigWindow_polygon_tools_upload": {
+			"title": "Upload polygon in WKT format"
+		},
+		"analysisConfigWindow_centroid_label": {
+			"html": "Pixel centroid coordinate"
+		},
+		"analysisConfigWindow_area_label": {
+			"html": "Area covered by selected pixel"
+		},
+		"analysisConfigWindow_displayYears_label": {
+			"html": "Selected year interval"
+		},
+		"analysisConfigWindow_rasterColumn_label": {
+			"html": "Satellite"
+		},
+		"analysisConfigWindow_rasterColumn_1": {
+			"html": "Raw DMSP"
+		},
+		"analysisConfigWindow_rasterColumn_2": {
+			"html": "Radiance calibrated DMSP"
+		},
+		"analysisConfigWindow_rasterColumn_3": {
+			"html": "VIIRS DNB"
+		},
+		"analysisConfigWindow_dmspOption1_label": {
+			"html": "Satellite series"
+		},
+		"analysisConfigWindow_dmspOption1": {
+			"placeholder": "Choose satellite series (default: all)"
+		},
+		"analysisConfigWindow_viirsOption1_label": {
+			"html": "Satellite series"
+		},
+		"analysisConfigWindow_viirsOption1": {
+			"placeholder": "Choose satellite series (default: all)"
+		},
+		"analysisConfigWindow_option2_label": {
+			"html": "Time period"
+		},
+		"analysisConfigWindow_viirsOption2_1": {
+			"html": "Annual"
+		},
+		"analysisConfigWindow_viirsOption2_2": {
+			"html": "Monthly"
+		},
+		"analysisConfigWindow_option3_label": {
+			"html": "Months"
+		},
+		"analysisConfigWindow_viirsOption3": {
+			"placeholder": "Choose months (default: all)"
+		},
+		"analysisConfigWindow_viirsOption3_1": {
+			"html": "January"
+		},
+		"analysisConfigWindow_viirsOption3_2": {
+			"html": "February"
+		},
+		"analysisConfigWindow_viirsOption3_3": {
+			"html": "March"
+		},
+		"analysisConfigWindow_viirsOption3_4": {
+			"html": "April"
+		},
+		"analysisConfigWindow_viirsOption3_5": {
+			"html": "May"
+		},
+		"analysisConfigWindow_viirsOption3_6": {
+			"html": "June"
+		},
+		"analysisConfigWindow_viirsOption3_7": {
+			"html": "July"
+		},
+		"analysisConfigWindow_viirsOption3_8": {
+			"html": "August"
+		},
+		"analysisConfigWindow_viirsOption3_9": {
+			"html": "September"
+		},
+		"analysisConfigWindow_viirsOption3_10": {
+			"html": "October"
+		},
+		"analysisConfigWindow_viirsOption3_11": {
+			"html": "November"
+		},
+		"analysisConfigWindow_viirsOption3_12": {
+			"html": "December"
+		},
+		"analysisConfigWindow_areaOption1_label": {
+			"html": "Aggregation"
+		},
+		"analysisConfigWindow_areaOption1_1": {
+			"html": "Summed radiance"
+		},
+		"analysisConfigWindow_areaOption1_2": {
+			"html": "Average radiance"
+		},
+		"analysisConfigWindow_generateChartButton": {
+			"html": "Generate chart"
+		},
+		"warning_1": {
+			"html": "Warning:\nLarge polygons require longer\ntimes to calculate.\nRecommended size is under 100,000 km²."
+		},
+		"warning_2": {
+			"html": "Polygon area too large.\nMaximum area is"
+		},
+		"resultError_1": {
+			"html": "The combination of selected year interval and satellite series does not overlap!"
+		},
+		"resultError_2": {
+			"html": "Invalid geometry."
+		},
+		"resultError_3": {
+			"html": "No data to display"
+		},
+		"resultError_4": {
+			"html": "Error"
+		},		
+		"resultError_5": {
+			"html": "Invalid polygon file."
+		},
+		"resultError_6": {
+			"html": "Not a single pixel was selected!"
+		},
+		"layerConfigWindowContainer_label": {
+			"html": "Layer options"
+		},
+		"layerBing_label": {
+			"html": "Base map"
+		},
+		"layerBing_1": {
+			"html": "Dark road imagery"
+		},
+		"layerBing_2": {
+			"html": "Aerial imagery"
+		},
+		"layerBing_3": {
+			"html": "Road imagery"
+		},
+		"opacityCtrl_label": {
+			"html": "Lights layer opacity: "
+		},
+		"layerStyle_label": {
+			"html": "Lights layer style"
+		},
+		"layerStyle_1": {
+			"html": "Greyscale"
+		},
+		"layerStyle_2": {
+			"html": "Rainbow"
+		},
+		"layerStyle_3": {
+			"html": "Green/yellow"
+		},
+		"layerGraticuleCtrlContSpan_label": {
+			"html": "Show grid"
+		},
+		"layerTree_label": {
+			"html": "Lights layer"
+		},
+		"dmsp_u_tree_label": {
+			"html": "Raw DMSP"
+		},
+		"dmsp_c_tree_label": {
+			"html": "Radiance calibrated DMSP"
+		},
+		"viirs_tree_label": {
+			"html": "VIIRS DNB"
+		},
+		"viirs_tree_annual_label": {
+			"html": "Annual"
+		},
+		"viirs_tree_monthly_label": {
+			"html": "Monthly"
+		},
+		"chartWindowContent_label": {
+			"html": "Light trends chart"
+		},
+		"chartTitle_1_1": {
+			"html": "Radiance of"
+		},
+		"chartTitle_1_2": {
+			"html": "pixel centered at"
+		},		
+		"chartTitle_2_1": {
+			"html": "Summed radiance in"
+		},
+		"chartTitle_2_2": {
+			"html": "area near"
+		},
+		"chartTitle_3_1": {
+			"html": "Average radiance in"
+		},
+		"chartTitle_3_2": {
+			"html": "area near"
+		},
+		"chartScaleLabel_1": {
+			"html": "Digital number"
+		},
+		"chartScaleLabel_2": {
+			"html": "nW/cm² sr"
+		},
+		"chartScaleLabel_3": {
+			"html": "'radiance calibrated' DMSP"
+		},
+		"chartScaleLabel_4": {
+			"html": "Years"
+		},
+		"chartPopup_footer": {
+			"html": "Agg. pixels"
+		},		
+		"chartNumbersContainer": {
+			"title": "Click to change trendline type"
+		},	
+		"chartTrendline": {
+			"html": "Trendline"
+		},
+		"searchCont": {
+			"title": "Search places or enter coordinates in 'lon, lat' (decimal) format."
+		},
+		"chartNumbers_equation1": {
+			"title": "Trendline equation (exponential)"
+		},
+		"chartNumbers_equation2": {
+			"title": "Trendline equation (linear)"
+		},
+		"chartNumbers_coef": {
+			"title": "Coefficient of determination"
+		},		
+		"chartNumbers_delta": {
+			"title": "Change per year"
+		},
+		"chartNumbers_delta_year1": {
+			"html": "year"
+		},
+		"chartNumbers_delta_year2": {
+			"html": "year"
+		},		
+		"chartNumbersTitle_label": {
+			"html": "Trendline properties"
+		},
+		"chartTrendlineType_label": {
+			"html": "Trendline type"
+		},
+		"chartTrendlineType0_label": {
+			"html": "None"
+		},		
+		"chartTrendlineType1_label": {
+			"html": "Exponential"
+		},
+		"chartTrendlineType2_label": {
+			"html": "Linear"
+		},			
+		"exportTitle_label": {
+			"html": "Export options"
+		},
+		"exportItem_1": {
+			"html": "chart"
+		},
+		"exportItem_2": {
+			"html": "data"
+		},	
+		"export_button": {
+			"html": "Export"
+		},
+		"searchBox": {
+			"placeholder": "Search places..."
+		},
+		"helpWindowContent_label": {
+			"html": "Stats and version"
+		},
+		"coordinates": {
+			"title": "Toggle decimal or deg/min/sec"
+		},
+		"tour_nextBtn": {
+			"html": "Next"
+		},
+		"tour_prevBtn": {
+			"html": "Back"
+		},
+		"tour_doneBtn": {
+			"html": "Done"
+		},
+		"tour_closeTooltip": {
+			"html": "Close tour"
+		},
+		"tour_1_title": {
+			"html": "Zoom in and out buttons"
+		},
+		"tour_1_content": {
+			"html": "These buttons are used for zooming in and out. You can also use your mouse wheel to do the same thing. For just zooming in you can also double click on the map or use shift-drag left mouse to draw a rectangle where you want to zoom in."
+		},
+		"tour_2_title": {
+			"html": "Ruler button"
+		},
+		"tour_2_content": {
+			"html": "You can use the ruler to measure distances. When you draw your first measurement it will also display its azimuth angle."
+		},
+		"tour_3_title": {
+			"html": "Pixel analysis button"
+		},
+		"tour_3_content": {
+			"html": "Click the button to activate it and then click anywhere on the map."
+		},
+		"tour_4_title": {
+			"html": "Light trend analysis"
+		},
+		"tour_4_content": {
+			"html": "This is the analysis config window where you can set up desired parameters."
+		},
+		"tour_5_title": {
+			"html": "Coordinates display"
+		},
+		"tour_5_content": {
+			"html": "Clicking on the coordinates will toggle between decimal and degree/minutes/seconds display."
+		},
+		"tour_6_title": {
+			"html": "Selecting the satellite system"
+		},
+		"tour_6_content": {
+			"html": "Pick a desired satellite system. DMSP spans from 1992 to 2013, while VIIRS starts at 2012, but is calibrated, has twice the spatial resolution, higher dynamic range, and is available not only as an annual composite but as monthly composites too.<br/><br/>This is a good moment for us to thank the team of Chris Elvidge and Kim Baugh for their work over several decades to make this digital data available, and also to thank the US government for releasing the data freely. More information about the data and processing is provided in the <a href=\"#\" onclick=\"$('#topBar_about').click(); return false;\">about</a> section."
+		},
+		"tour_7_title": {
+			"html": "Generate the light trends chart"
+		},
+		"tour_7_content": {
+			"html": "Pressing the generate button will display the chart. Press it and see the result."
+		},
+		"tour_8_title": {
+			"html": "Chart display options - Y axis"
+		},
+		"tour_8_content": {
+			"html": "Clicking on the chart will toggle the Y axis between different display modes (normal, start at zero, logarithmic). Note that if the chart contains zero or negative Y, logarithmic scale is not available."
+		},
+		"tour_9_title": {
+			"html": "Chart display options - Trendline"
+		},
+		"tour_9_content": {
+			"html": "A trendline is drawn on a map. You can choose between a linear and an exponential trendline (default) or you can hide it. In the Trendline property window you can see its equation, coefficient of determination and difference per year."
+		},
+		"tour_10_title": {
+			"html": "Export chart and data"
+		},
+		"tour_10_content": {
+			"html": "You can export the generated chart and data in various different formats."
+		},
+		"tour_11_title": {
+			"html": "Area analysis button"
+		},
+		"tour_11_content": {
+			"html": "Click the button to activate it. Draw a polygon by clicking on at least three different places on the map, finishing with a double click."
+		},
+		"tour_12_title": {
+			"html": "Copy polygon coordinates to cliboard"
+		},
+		"tour_12_content": {
+			"html": "You can easily copy the drawn polygon coordinates by clicking this button."
+		},
+		"tour_13_title": {
+			"html": "Download polygon"
+		},
+		"tour_13_content": {
+			"html": "If you want to save your polygon for future use or to import it into another application, you can use this tool to do so. The downloaded polygon is in a WKT format."
+		},
+		"tour_14_title": {
+			"html": "Upload polygon"
+		},
+		"tour_14_content": {
+			"html": "If you have a polygon in a WKT format, you can upload it and use it as if you have drawn it yourself."
+		},
+		"tour_15_title": {
+			"html": "Polygon area"
+		},
+		"tour_15_content": {
+			"html": "The number represents the area of the drawn polygon. If the drawn polygon is under 1000 km² in size (a second polygon is drawn along yours indicating pixel boundaries), then a second number is displayed that represents the actual area occupied by pixels withing the polygon. Note that a pixel is selected only if its centroid (a point in the center of a pixel) is within the drawn polygon."
+		},
+		"tour_16_title": {
+			"html": "Pixel aggregation method"
+		},
+		"tour_16_content": {
+			"html": "You can pick between summation and average to be performed when aggregating pixels selected by the polygon. If there are \"nodata\" pixels withing the polygon, they are excluded in the calculation. \"Nodata\" pixels occur when the site had no cloud and moon free data during a particular month."
+		},
+		"tour_17_title": {
+			"html": "Datapoint display"
+		},
+		"tour_17_content": {
+			"html": "When you hover over datapoints it will show how many pixels were aggregated and if there were nodata pixels present. If more then 10% of pixels were nodata, then those points will show as transperent and are not used for calculating the trendline."
+		},
+		"tour_18_title": {
+			"html": "Search places"
+		},
+		"tour_18_content": {
+			"html": "Searching for places is easy. Start entering your desired place, and as you type you can select it from a dropdown menu. If you have exact coordinates, then enter them in a lon, lat decimal format, such as '-122.4785,37.818' and click it from a dropdown menu."
+		},
+		"tour_19_title": {
+			"html": "Layer options button"
+		},
+		"tour_19_content": {
+			"html": "Clicking this icon opens or closes a layer options window where you can alter appearance of the map."
+		},
+		"tour_20_title": {
+			"html": "Layer options - Base map"
+		},
+		"tour_20_content": {
+			"html": "The default maps show a dark theme road map, but you can change it to Aerial or normal Road map."
+		},
+		"tour_21_title": {
+			"html": "Layer options - Opacity control"
+		},
+		"tour_21_content": {
+			"html": "Use the slider to change the opacity of the selected radiance layer"
+		},
+		"tour_22_title": {
+			"html": "Layer options - Style"
+		},
+		"tour_22_content": {					 
+			"html": "Change the style of the selected radiance layer. The default rainbow style is suited for most applications. Colorblind people may find the green/yellow or greyscale style more useful."
+		},
+		"tour_23_title": {
+			"html": "Layer options - Graticule"
+		},
+		"tour_23_content": {
+			"html": "This option draws a graticule that represent selected radiance map pixel boundaries."
+		},
+		"tour_24_title": {
+			"html": "Layer options - Layer"
+		},
+		"tour_24_content": {
+			"html": "Browse the tree view and select a desired layer.<br/><br/>This is the end of the guided tour."
+		},
+		"tour_25_title": {
+			"html": "Mask"
+		},
+		"tour_25_content": {
+			"html": "Optionally you can exclude areas that do not have stable light sources using vcm-orm-ntl (VIIRS Cloud Mask - Outlier Removed - Nighttime Lights) annual product as a mask.<br/><br/>Click on the Generate chart button to continue."
+		},
+		"usageStatistics_select_1": {
+			"html": "Day"
+		},
+		"usageStatistics_select_2": {
+			"html": "Week"
+		},
+		"usageStatistics_select_3": {
+			"html": "Month"
+		},
+		"usageStatistics_select_4": {
+			"html": "Year"
+		},
+		"usageStatistics_table_next": {
+			"html": "Next"
+		},
+		"usageStatistics_table_previous": {
+			"html": "Previous"
+		},
+		"usageStatistics_table_bottom_info": {
+			"html": "Showing _START_ to _END_ of _TOTAL_ entries"
+		},
+		"usageStatistics_table_pixel": {
+			"html": "Pixel"
+		},
+		"usageStatistics_table_area": {
+			"html": "Area"
+		},
+		"usageStatistics_table_export": {
+			"html": "Data export"
+		}	
+	},
+	"sl": {
+		"months": ["Jan", "Feb", "Mar", "Apr", "Maj", "Jun", "Jul", "Avg", "Sep", "Okt", "Nov", "Dec"],
+		"topBar_about": {
+			"html": "O aplikaciji"
+		},
+		"topBar_statistics": {
+			"html": "Statistika"
+		},
+		"topBar_help": {
+			"html": "Pomoč"
+		},
+		"topBar_language_label_1": {
+			"html": "Jezik"
+		},		
+		"topBar_statisticsContent_label": {
+			"html": "Statistika"
+		},
+		"usageStatistics_label": {
+			"html": "Statistika zahtevkov združenih po"
+		},				
+		"topBar_helpContent_label": {
+			"html": "Pomoč"
+		},
+		"topBar_aboutContent_label": {
+			"html": "O aplikaciji"
+		},
+		"aboutContent": {
+			"html": "<p><span>This web application allows you to examine changes in nighttime light emissions (nearly) worldwide, from 1992 up until last month. This text explains where the data comes from, what need to know about the data sources to understand the charts you generate, and who developed the app. If you haven’t already done so, you may wish to use our <a href=\"#\" onclick=\"$('#topBar_aboutContent').fadeOut(); $('#tourButton').click(); return false;\">tutorial</a></span> <span>to get started looking at the data quickly.</span></p><p><span>The emissions data come from two satellite sensors. From 1992 to 2013, data comes from the Operational Linescan System of the Defense Meteorological Satellite Program (DMSP) satellites. From 2012 to the present, data comes from the Day/Night Band of the </span><span>Visible Infrared Imaging Radiometer Suite instrument</span><span> (VIIRS DNB). The instruments have a number of <span class=MsoHyperlink><a target=\"_blank\" href=\"https://dx.doi.org/10.3390/rs5126717\">important differences</a></span>, and for that reason it is not possible to have a single record running from 1992 to today.</span></p><p><span>Both of the satellite instruments scanned (nearly) the entire Earth each night, but the DMSP typically passed overhead around 8:30 pm, while VIIRS DNB passes over much later, around 1:30 am. The Earth is brightly illuminated by moonlight when the satellites pass over several days per month, and on any given night, much of the Earth is obscured by cloud. For more than two decades, the team of Chris Elvidge and Kimberly Baugh have produced global annual satellite observed nighttime lights data products. They were based initially at the U.S. National Oceanic and Atmospheric Adminsitration’s National Geophysical Data Center in Boulder, Colorado. In 2019 they relocated the Payne Institute at the Colorado School of Mines, Golden, Colorado. A description of the VIIRS DNB night lights product used in this application is available <span class=MsoHyperlink><a target=\"_blank\" href=\"https://doi.org/10.1080/01431161.2017.1342050\">here</a></span>. The data used in the app can be accessed from their group’s <span class=MsoHyperlink><a target=\"_blank\" href=\"https://ngdc.noaa.gov/eog/index.html\">website</a></span>.</span></p><p><span>&nbsp;</span></p><p><b><span>About the DMSP</span></b></p><p><span>Observing night lights was not the main purpose of the DMSP, and the 1992-2013 data record therefore have a number of limitations. The instrument was not calibrated, and therefore the results are displayed in “digital numbers” ranging from 0-63. In city centers, the satellite data was often “saturated” (too bright to measure), and therefore each year will just show a value of 63. The team of Chris Elvidge and Kim Baugh worked to produce approximately radiometrically calibrated data for specific years, and this can be accessed by selecting “Radiance Calibrated DMSP” on the “satellite” dropdown menu.</span></p><p><span>The spatial resolution of the satellite was several kilometers, and is in fact larger than the pixels displayed by the app. Because the overpass time of the DMSP was so early in the evening, at high latitudes most of the data is acquired during winter. Care should therefore be taken in comparing results from high latitude countries to lower latitude countries.</span></p><p><span>&nbsp;</span></p><p><b><span>About VIIRS DNB</span></b></p><p><span>The VIIRS DNB was the first satellite instrument intentionally designed to image human lights on the worldwide scale, and is therefore a major <span class=MsoHyperlink><a target=\"_blank\" href=\"https://dx.doi.org/10.3390/rs5126717\">improvement over DMSP</a></span>. The satellite resolution is about 750 meters (or 0.5 square km). This data has been reprojected onto a grid, so in some places (especially high latitudes) the pixels are displayed at finer detail than the satellite can actually see. Because of the higher data quality, it is possible to display data on a monthly timescale.</span></p><p><span>&nbsp;</span></p><p><b><span>Limitations of satellite data</span></b></p><p><span>Night lights data can tell many interesting stories, but it is important to keep in mind exactly what it represents. For example, the data presented here should not be understood as (directly) representing energy consumption, community wealth, or light pollution. While each of those are often related to light emissions, the satellite does not measure them directly.</span></p><p><span>The satellites measure light in the spectral range of about 500-900 nm. This is not the same as human vision, which runs from 400-700 nm. The satellite data is therefore less sensitive to white light than the human eye, and has sensitivity at infrared wavelengths that the human eye cannot see. For this reason, when communities switch from orange high pressure sodium lamps to white LED, the satellites <span class=MsoHyperlink><a target=\"_blank\" href=\"http://dx.doi.org/10.1126/sciadv.1701528\">often report a drop in brightness</a></span> even if a human would say that the white LEDs look brighter. Since cities worldwide are changing to white LEDs, it is important to keep this in mind.</span></p><p><span>Even far away from artificial lights, the world is not entirely dark. It is lit by starlight, aurora light, and “airglow”, and the satellite has some sensitivity to this light, especially around the polar regions. In areas that are mainly unlit, changes in airglow or the satellite calibration may affect all of the pixels similarly. Fires can also produce very bright temporary light emissions, and false signals caused by solar radiation appear over a certain region near the southern. It is therefore not advisable to include large areas that have little or no installed lighting in your analyses. To some extent, this problem can be reduced by applying a mask. For example, if you select “2016 vcm-orm-ntl”, this will remove areas that were not lit consistently during 2016.</span></p><p><span>The emissions observed from any given area change from month to month for a number of reasons. To some extent, and over the long term, this is due to actual changes in the installed lighting. But on shorter time scales, <span class=MsoHyperlink><a target=\"_blank\" href=\"https://dx.doi.org/10.3390/rs10121964\">variation is due to a number of other reasons</a></span>, such as the imaging angles that made up the monthly composite. Many areas, especially those at high latitudes, also display seasonal cycles. In areas that receive snow, it is advisable to restrict analyses to months that are unlikely to have snow on the ground. In addition, at high latitudes there is no data during the summer due to stray light shining on the satellite sensor. </span></p><p><span>Some of the light emitted upwards can scatter off of molecules and particles in the atmosphere, producing “skyglow”, a type of light pollution. Because of this, the satellites often report light emissions from unlit areas near bright light sources. This can be very easily seen in cities that are on coasts. Because this light is regularly present, it will not entirely be removed by the “vcm-orm-ntl” mask. You may also be interested in viewing a <span class=MsoHyperlink><a target=\"_blank\" href=\"https://www.lightpollutionmap.info\">map of predicted clear night sky brightness</a></span> (see “ATLAS 2015” on that page).</span></p><p><span>&nbsp;</span></p><p><b><span>Additional information</span></b></p><p><span>Analyzing large areas can take several seconds, and during this time it will not be possible for other webapp users to make an analysis request. For this reason, we currently limit analyses to 5,000 square kilometers.</span></p><p><span>&nbsp;</span></p><p><b><span>Funding and development</span></b></p><p><span>This web application was partially funded through the European Union’s Horizon 2020 research and innovation programme under grant agreement no. 689443 via project <span class=MsoHyperlink><a target=\"_blank\" href=\"http://www.geoessential.eu/\">GEOEssential</a></span>, with additional funding and project direction from the <span class=MsoHyperlink><a target=\"_blank\" href=\"https://www.gfz-potsdam.de\">GFZ German Research Centre for Geosciences</a></span>. The code underlying the web application is available under an <a>EUPL license</a>.</span></p><p><span>&nbsp;</span></p><p><span>The application was programmed by <a href=\"&#x6d;&#x61;&#x69;&#x6c;&#x74;&#x6f;&#x3a;&#x73;&#x74;&#x61;&#x72;&#x65;&#x6a;&#x40;&#x74;&#x2d;&#x32;&#x2e;&#x6e;&#x65;&#x74;&#x3f;&#x73;&#x75;&#x62;&#x6a;&#x65;&#x63;&#x74;&#x3d;&#x4c;&#x69;&#x67;&#x68;&#x74;&#x74;&#x72;&#x65;&#x6e;&#x64;&#x73;&#x20;&#x61;&#x70;&#x70;&#x6c;&#x69;&#x63;&#x61;&#x74;&#x69;&#x6f;&#x6e;\" target=\"_top\">Deneb, Geoinformation solutions, Jurij Stare s.p.</a></span></p><div style='text-align:center;'><img class='logos' src='img/logo_eu.jpg'/><a href='http://www.geoessential.eu/' target='_blank'><img class='logos' src='img/logo_geoessential.png'/></a><a href='https://www.gfz-potsdam.de/en/home/' target='_blank'><img class='logos' src='img/logo_gfz.jpg'/></a></div>"
+		},
+		"helpContent": {
+			"html": "sl help"
+		},
+		"zoomInButton": {
+			"title": "Približaj"
+		},
+		"zoomOutButton": {
+			"title": "Oddalji"
+		},
+		"pixelAnalysisButton": {
+			"title": "Analiziraj posamezen piksel"
+		},
+		"areaAnalysisButton": {
+			"title": "Analiziraj območje"
+		},
+		"rulerButton": {
+			"title": "Merjenje razdalj"
+		},
+		"tourButton": {
+			"title": "Vodena pomoč"
+		},		
+		"analysisConfigWindowContent_label": {
+			"html": ["Analiza smernice svetlobe - piksel", "Analiza smernice svetlobe - površina"]
+		},
+		"analysisConfigWindow_click_label": {
+			"html": "Koordinate klika"
+		},
+		"analysisConfigWindow_polygon_label": {
+			"html": "Koordinate poligona"
+		},
+		"analysisConfigWindow_PolygonCentroid_label": {
+			"html": "Koordinate centroida poligona"
+		},
+		"analysisConfigWindow_polygonArea_label": {
+			"html": "Površina poligona"
+		},
+		"analysisConfigWindow_polygonArea_selected_label": {
+			"html": "izbrano"
+		},
+		"analysisConfigWindow_polygon_tools_copyToClipboard": {
+			"title": "Prenos v odložišče"
+		},
+		"analysisConfigWindow_polygon_tools_download": {
+			"title": "Prenesi poligon v WKT formatu"
+		},
+		"analysisConfigWindow_polygon_tools_upload": {
+			"title": "Pošlji poligon v WKT formatu"
+		},
+		"analysisConfigWindow_centroid_label": {
+			"html": "Koordinate centroida piksla"
+		},
+		"analysisConfigWindow_area_label": {
+			"html": "Površina piksla"
+		},
+		"analysisConfigWindow_displayYears_label": {
+			"html": "Izbran časovni interval"
+		},
+		"analysisConfigWindow_rasterColumn_label": {
+			"html": "Satelit"
+		},
+		"analysisConfigWindow_rasterColumn_1": {
+			"html": "Surovi DMSP"
+		},
+		"analysisConfigWindow_rasterColumn_2": {
+			"html": "Kalibriran DMSP"
+		},
+		"analysisConfigWindow_rasterColumn_3": {
+			"html": "VIIRS DNB"
+		},
+		"analysisConfigWindow_dmspOption1_label": {
+			"html": "Serije satelita"
+		},
+		"analysisConfigWindow_areaOption1_label": {
+			"html": "Agregat"
+		},
+		"analysisConfigWindow_areaOption1_1": {
+			"html": "Vsota izseva"
+		},
+		"analysisConfigWindow_areaOption1_2": {
+			"html": "Povprečje izseva"
+		},
+		"analysisConfigWindow_dmspOption1": {
+			"placeholder": "Izberi serije satelita (prevzeto: vse)"
+		},
+		"analysisConfigWindow_viirsOption1_label": {
+			"html": "Serija satelitov"
+		},
+		"analysisConfigWindow_viirsOption1": {
+			"placeholder": "Izberi serije satelita (prevzeto: vse)"
+		},
+		"analysisConfigWindow_option2_label": {
+			"html": "Časovno obdobje"
+		},
+		"analysisConfigWindow_viirsOption2_1": {
+			"html": "Letno"
+		},
+		"analysisConfigWindow_viirsOption2_2": {
+			"html": "Mesečno"
+		},
+		"analysisConfigWindow_option3_label": {
+			"html": "Meseci"
+		},
+		"analysisConfigWindow_viirsOption3": {
+			"placeholder": "Izberi mesece (prevzeto: vsi)"
+		},
+		"analysisConfigWindow_viirsOption3_1": {
+			"html": "Januar"
+		},
+		"analysisConfigWindow_viirsOption3_2": {
+			"html": "Februar"
+		},
+		"analysisConfigWindow_viirsOption3_3": {
+			"html": "Marec"
+		},
+		"analysisConfigWindow_viirsOption3_4": {
+			"html": "April"
+		},
+		"analysisConfigWindow_viirsOption3_5": {
+			"html": "Maj"
+		},
+		"analysisConfigWindow_viirsOption3_6": {
+			"html": "Junij"
+		},
+		"analysisConfigWindow_viirsOption3_7": {
+			"html": "Julij"
+		},
+		"analysisConfigWindow_viirsOption3_8": {
+			"html": "Avgust"
+		},
+		"analysisConfigWindow_viirsOption3_9": {
+			"html": "September"
+		},
+		"analysisConfigWindow_viirsOption3_10": {
+			"html": "Oktober"
+		},
+		"analysisConfigWindow_viirsOption3_11": {
+			"html": "November"
+		},
+		"analysisConfigWindow_viirsOption3_12": {
+			"html": "December"
+		},
+		"analysisConfigWindow_generateChartButton": {
+			"html": "Generiraj graf"
+		},
+		"warning_1": {
+			"html": "Opozorilo:\nVeliki poligoni zahtevajo\ndaljši čas za izračun.\nPriporočena velikost je pod 100.000 km²."
+		},
+		"warning_2": {
+			"html": "Prevelik poligon.\nNajvečja velikost je"
+		},
+		"resultError_1": {
+			"html": "Kombinacija časovnega intervala in serije satelita se ne prekriva!"
+		},
+		"resultError_2": {
+			"html": "Napaka v geometriji."
+		},
+		"resultError_3": {
+			"html": "Ni podatkov za prikaz"
+		},
+		"resultError_4": {
+			"html": "Napaka"
+		},		
+		"resultError_5": {
+			"html": "Neveljavna datoteka s poligonom."
+		},
+		"resultError_6": {
+			"html": "Izbrano število pikslov je nič!"
+		},
+		"layerConfigWindowContainer_label": {
+			"html": "Možnosti slojev"
+		},
+		"layerBing_label": {
+			"html": "Podloga"
+		},
+		"layerBing_1": {
+			"html": "Temna cestna karta"
+		},
+		"layerBing_2": {
+			"html": "Satelitska karta"
+		},
+		"layerBing_3": {
+			"html": "Cestna karta"
+		},
+		"opacityCtrl_label": {
+			"html": "Prosojnost sloja svetlosti: "
+		},
+		"layerStyle_label": {
+			"html": "Slog sloja svetlosti"
+		},
+		"layerStyle_1": {
+			"html": "Sivinski"
+		},
+		"layerStyle_2": {
+			"html": "Mavričasti"
+		},
+		"layerStyle_3": {
+			"html": "Zeleno-rumeni"
+		},
+		"layerGraticuleCtrlContSpan_label": {
+			"html": "Mreža"
+		},
+		"layerTree_label": {
+			"html": "Sloj svetlosti"
+		},
+		"dmsp_u_tree_label": {
+			"html": "Surovi DMSP"
+		},
+		"dmsp_c_tree_label": {
+			"html": "Kalibrirani DMSP"
+		},
+		"viirs_tree_label": {
+			"html": "VIIRS DNB"
+		},
+		"viirs_tree_annual_label": {
+			"html": "Letni"
+		},
+		"viirs_tree_monthly_label": {
+			"html": "Mesečni"
+		},
+		"chartWindowContent_label": {
+			"html": "Graf smernice svetlobe"
+		},
+		"chartTitle_1_1": {
+			"html": "Radianca"
+		},
+		"chartTitle_1_2": {
+			"html": "v sredini piksla"
+		},		
+		"chartTitle_2_1": {
+			"html": "Vsota radiance"
+		},
+		"chartTitle_2_2": {
+			"html": "v bližini"
+		},
+		"chartTitle_3_1": {
+			"html": "Povprečje radiance"
+		},
+		"chartTitle_3_2": {
+			"html": "v bližini"
+		},
+		"chartScaleLabel_1": {
+			"html": "Digitalno število"
+		},
+		"chartScaleLabel_2": {
+			"html": "nW/cm² sr"
+		},
+		"chartScaleLabel_3": {
+			"html": "'kalibriran' DMSP"
+		},
+		"chartScaleLabel_4": {
+			"html": "Leta"
+		},
+		"chartPopup_footer": {
+			"html": "Agreg. piksli"
+		},
+		"chartNumbersContainer": {
+			"title": "Spremeni tip regresije"
+		},
+		"chartTrendline": {
+			"html": "Regresija"
+		},
+		"chartNumbers_equation1": {
+			"title": "Enačba regresije (eksponencialna)"
+		},
+		"chartNumbers_equation2": {
+			"title": "Enačba regresije (linearna)"
+		},
+		"chartNumbers_coef": {
+			"title": "Determinacijski koeficient"
+		},		
+		"chartNumbers_delta": {
+			"title": "Sprememba na leto"
+		},
+		"chartNumbers_delta_year1": {
+			"html": "leto"
+		},	
+		"chartNumbers_delta_year2": {
+			"html": "leto"
+		},
+		"chartNumbersTitle_label": {
+			"html": "Lastnosti regresije"
+		},	
+		"chartTrendlineType_label": {
+			"html": "Tip regresije"
+		},
+		"chartTrendlineType0_label": {
+			"html": "Brez regresije"
+		},
+		"chartTrendlineType1_label": {
+			"html": "Eksponencialna"
+		},	
+		"chartTrendlineType2_label": {
+			"html": "Linearna"
+		},			
+		"exportTitle_label": {
+			"html": "Možnosti izvoza"
+		},
+		"exportItem_1": {
+			"html": "graf"
+		},
+		"exportItem_2": {
+			"html": "podatki"
+		},		
+		"export_button": {
+			"html": "Izvozi"
+		},
+		"searchCont": {
+			"title": "Iskanje krajev ali pa vnesite koordinate v 'lon, lat' decimalnem formatu."
+		},
+		"searchBox": {
+			"placeholder": "Iskanje krajev..."
+		},
+		"helpWindowContent_label": {
+			"html": "Statistika in verzija"
+		},
+		"coordinates": {
+			"title": "Prestavi med decimalnim in stopinje/min/sek"
+		},
+		"tour_nextBtn": {
+			"html": "Naprej"
+		},
+		"tour_prevBtn": {
+			"html": "Nazaj"
+		},
+		"tour_doneBtn": {
+			"html": "Končano"
+		},
+		"tour_closeTooltip": {
+			"html": "Zapri vodeno pomoč"
+		},
+		"tour_1_title": {
+			"html": "Zoom in and out buttons"
+		},
+		"tour_1_content": {
+			"html": "These buttons are used for zooming in and out. You can also use your mouse wheel to do the same thing. For just zooming in you can also double click on the map or use shift-drag left mouse to draw a rectangle where you want to zoom in."
+		},
+		"tour_2_title": {
+			"html": "Ruler button"
+		},
+		"tour_2_content": {
+			"html": "You can use the ruler to measure distances. When you draw your first measurement it will also display its azimuth angle."
+		},
+		"tour_3_title": {
+			"html": "Pixel analysis button"
+		},
+		"tour_3_content": {
+			"html": "Click the button to activate it and then click anywhere on the map."
+		},
+		"tour_4_title": {
+			"html": "Light trend analysis"
+		},
+		"tour_4_content": {
+			"html": "This is the analysis config window where you can set up desired parameters."
+		},
+		"tour_5_title": {
+			"html": "Coordinates display"
+		},
+		"tour_5_content": {
+			"html": "Clicking on the coordinates will toggle between decimal and degree/minutes/seconds display."
+		},
+		"tour_6_title": {
+			"html": "Selecting the satellite system"
+		},
+		"tour_6_content": {
+			"html": "Pick a desired satellite system. DMSP spans from 1992 to 2013, while VIIRS starts at 2012, but is calibrated, has twice the spatial resolution, higher dynamic range, and is available not only as an annual composite but as monthly composites too.<br/><br/>This is a good moment for us to thank the team of Chris Elvidge and Kim Baugh for their work over several decades to make this digital data available, and also to thank the US government for releasing the data freely. More information about the data and processing is provided in the <a href=\"#\" onclick=\"$('#topBar_about').click(); return false;\">about</a> section."
+		},
+		"tour_7_title": {
+			"html": "Generate the light trends chart"
+		},
+		"tour_7_content": {
+			"html": "Pressing the generate button will display the chart. Press it and see the result."
+		},
+		"tour_8_title": {
+			"html": "Chart display options - Y axis"
+		},
+		"tour_8_content": {
+			"html": "Clicking on the chart will toggle the Y axis between different display modes (normal, start at zero, logarithmic). Note that if the chart contains zero or negative Y, logarithmic scale is not available."
+		},
+		"tour_9_title": {
+			"html": "Chart display options - Trendline"
+		},
+		"tour_9_content": {
+			"html": "A trendline is drawn on a map. You can choose between a linear and an exponential trendline (default) or you can hide it. In the Trendline property window you can see its equation, coefficient of determination and difference per year."
+		},
+		"tour_10_title": {
+			"html": "Export chart and data"
+		},
+		"tour_10_content": {
+			"html": "You can export the generated chart and data in various different formats."
+		},
+		"tour_11_title": {
+			"html": "Area analysis button"
+		},
+		"tour_11_content": {
+			"html": "Click the button to activate it. Draw a polygon by clicking on at least three different places on the map, finishing with a double click."
+		},
+		"tour_12_title": {
+			"html": "Copy polygon coordinates to cliboard"
+		},
+		"tour_12_content": {
+			"html": "You can easily copy the drawn polygon coordinates by clicking this button."
+		},
+		"tour_13_title": {
+			"html": "Download polygon"
+		},
+		"tour_13_content": {
+			"html": "If you want to save your polygon for future use or to import it into another application, you can use this tool to do so. The downloaded polygon is in a WKT format."
+		},
+		"tour_14_title": {
+			"html": "Upload polygon"
+		},
+		"tour_14_content": {
+			"html": "If you have a polygon in a WKT format, you can upload it and use it as if you have drawn it yourself."
+		},
+		"tour_15_title": {
+			"html": "Polygon area"
+		},
+		"tour_15_content": {
+			"html": "The number represents the area of the drawn polygon. If the drawn polygon is under 1000 km² in size (a second polygon is drawn along yours indicating pixel boundaries), then a second number is displayed that represents the actual area occupied by pixels withing the polygon. Note that a pixel is selected only if its centroid (a point in the center of a pixel) is within the drawn polygon."
+		},
+		"tour_16_title": {
+			"html": "Pixel aggregation method"
+		},
+		"tour_16_content": {
+			"html": "You can pick between summation and average to be performed when aggregating pixels selected by the polygon. If there are \"nodata\" pixels withing the polygon, they are excluded in the calculation. \"Nodata\" pixels occur when the site had no cloud and moon free data during a particular month."
+		},
+		"tour_17_title": {
+			"html": "Datapoint display"
+		},
+		"tour_17_content": {
+			"html": "When you hover over datapoints it will show how many pixels were aggregated and if there were nodata pixels present. If more then 10% of pixels were nodata, then those points will show as transperent and are not used for calculating the trendline."
+		},
+		"tour_18_title": {
+			"html": "Search places"
+		},
+		"tour_18_content": {
+			"html": "Searching for places is easy. Start entering your desired place, and as you type you can select it from a dropdown menu. If you have exact coordinates, then enter them in a lon, lat decimal format, such as '-122.4785,37.818' and click it from a dropdown menu."
+		},
+		"tour_19_title": {
+			"html": "Layer options button"
+		},
+		"tour_19_content": {
+			"html": "Clicking this icon opens or closes a layer options window where you can alter appearance of the map."
+		},
+		"tour_20_title": {
+			"html": "Layer options - Base map"
+		},
+		"tour_20_content": {
+			"html": "The default maps show a dark theme road map, but you can change it to Aerial or normal Road map."
+		},
+		"tour_21_title": {
+			"html": "Layer options - Opacity control"
+		},
+		"tour_21_content": {
+			"html": "Use the slider to change the opacity of the selected radiance layer"
+		},
+		"tour_22_title": {
+			"html": "Layer options - Style"
+		},
+		"tour_22_content": {					 
+			"html": "Change the style of the selected radiance layer. The default rainbow style is suited for most applications. Colorblind people may find the green/yellow or greyscale style more useful."
+		},
+		"tour_23_title": {
+			"html": "Layer options - Graticule"
+		},
+		"tour_23_content": {
+			"html": "This option draws a graticule that represent selected radiance map pixel boundaries."
+		},
+		"tour_24_title": {
+			"html": "Layer options - Layer"
+		},
+		"tour_24_content": {
+			"html": "Browse the tree view and select a desired layer.<br/><br/>This is the end of the guided tour."
+		},
+		"tour_25_title": {
+			"html": "Mask"
+		},
+		"tour_25_content": {
+			"html": "Optionally you can exclude areas that do not have stable light sources using vcm-orm-ntl (VIIRS Cloud Mask - Outlier Removed - Nighttime Lights) annual product as a mask.<br/><br/>Click on the Generate chart button to continue."
+		},
+		"usageStatistics_select_1": {
+			"html": "Dan"
+		},
+		"usageStatistics_select_2": {
+			"html": "Teden"
+		},
+		"usageStatistics_select_3": {
+			"html": "Mesec"
+		},
+		"usageStatistics_select_4": {
+			"html": "Leto"
+		},
+		"usageStatistics_table_next": {
+			"html": "Naprej"
+		},
+		"usageStatistics_table_previous": {
+			"html": "Nazaj"
+		},
+		"usageStatistics_table_bottom_info": {
+			"html": "Prikazano _START_ do _END_ od skupaj _TOTAL_ zapisov"
+		},
+		"usageStatistics_table_pixel": {
+			"html": "Piksel"
+		},
+		"usageStatistics_table_area": {
+			"html": "Površina"
+		},
+		"usageStatistics_table_export": {
+			"html": "Izvoz podatkov"
+		}
+	}
+}

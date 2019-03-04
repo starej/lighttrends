@@ -1,0 +1,49 @@
+Changelog
+0.7.6
+	New "about" text.
+0.7.5
+	Added optional Mask parameter at point calculation
+	If mask is selected, selected pixels (at drawn polygon) are also afected by the mask
+	Help page removed. Help button starts guided tour.
+	Updated the guided tour to include Mask feature.
+	Fixed chart export issue when pixel scale is higher than 1
+0.7.4
+	Added optional Mask parameter at area calculation
+0.7.3
+	Guided tour text changes
+	"Trendline" label in the chart legened is now removed when Trendline type "None" is selected (label was crossed before).
+0.7.2
+	Fixed an error when drawing grid when layer list was collapsed with selected layer
+	Minor UI design fixes
+0.7.1
+	Fixed an error when polygon did not select a single pixel.
+	Added a visual indicator in Guided tour when a user needs to click a button
+0.7.0
+	Added a guided tour of all features, accessible via ? button on the toolbar
+	Limited maximum size of polygon to be analyzed to 5000 km^2 with the option to unlock the limit
+	Top menu responsive design added when viewed on smaller screens
+	Fixed an issue when creating a very narrow diagonal polygon. Select would then return wrong area as indicated here: https://trac.osgeo.org/postgis/ticket/3457
+0.6.2
+	Option to not display the trendline
+0.6.1
+	Trendline properties jumping fix when switching between trendlines
+	Fixed searching for negative longitude values in "Search places" box
+	Data points in a chart with more than 10% of nodata pixels, do not contribute to the trendline calculation anymore
+0.6.0
+	Removed connecting lines in generated charts
+	Trendline type option available (exponential by default or linear)
+	Trendline attributes displayed
+	Export options redesigned
+	DNB points marked differently on the area chart if they contain more than 10% nodata pixels
+	Map color labels changed to Grayscale, Rainbow, Green/yellow
+	Vertical axes label changed from "nW/cm2*sr" to "nW/cm2 sr" when VIIRS selected
+	Page header redesigned. Now it is always displayed on top and contains statistics page
+	Polygon upload/download (WKT format) function added in Area configuration window, along with copy to clipboard (polygon coordinates)
+	Year interval slider now defaults to full range
+	Changed area digit display format in Area configuration window
+	VIIRS/monthy is now selected by default in Area configuration window
+	Chart titles changed to also contain area
+	VIIRS latest annual map is turned on by default
+	IE11 support optimisation
+0.5.0
+	first version of the application

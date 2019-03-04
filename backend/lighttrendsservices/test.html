@@ -1,0 +1,71 @@
+﻿
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <meta charset="utf-8" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="https://cdn.rawgit.com/eligrey/FileSaver.js/5ed507ef8aa53d8ecfea96d96bc7214cd2476fd2/FileSaver.min.js"></script>
+    <script type="text/javascript">
+        function submitForm() {
+            var myFormData = new FormData();
+
+            myFormData.append('format', $("#outputformat").val());
+            myFormData.append('querytype', $("#querytype").val());
+            myFormData.append('rastercolumns', $("#rastercolumns").val());
+            myFormData.append('geometry', $("#geometry").val());
+
+            $.ajax({
+                url: 'getstatistics.ashx',
+                type: 'POST',
+                processData: false,
+                contentType: false,
+                //dataType: 'json',
+                data: myFormData,
+                success: function (data) {
+                    if ($("#outputformat").val() == 'csv') {
+                        var blob = new Blob([data], { type: "text/csv;charset=utf-8" });
+                        saveAs(blob, "export.csv");
+                    } else if ($("#outputformat").val() == 'json') {
+                        $("#submit_result").html(JSON.stringify(data, null, 4))
+                    } else if ($("#outputformat").val() == 'excel') {
+                        $("#submit_result").html("<a href='https://lighttrends.lightpollutionmap.info/query/'" + data + "'>excel</a>");
+                    }
+
+                }
+            });
+        }
+    </script>
+</head>
+<body>
+    <div>
+        output format<br />
+        <select id="outputformat">
+            <option value="json" selected>json</option>
+            <option value="csv">csv</option>
+            <option value="excel">csv</option>
+        </select><br />
+        query type<br />
+        <select id="querytype">
+            <option value="point" selected>point</option>
+            <option value="area">area</option>
+        </select><br />
+
+        raster columns<br />
+        <textarea rows="5" style="width:500px" id="rastercolumns" type="text" name="rastercolumns" placeholder="rastercolumns">dmsp_u_f101992;dmsp_u_f101993;dmsp_u_f101994;dmsp_u_f121994;dmsp_u_f121995;dmsp_u_f121996;dmsp_u_f121997;dmsp_u_f121998;dmsp_u_f121999;dmsp_u_f141997;dmsp_u_f141998;dmsp_u_f141999;dmsp_u_f142000;dmsp_u_f142001;dmsp_u_f142002;dmsp_u_f142003;dmsp_u_f152000;dmsp_u_f152001;dmsp_u_f152002;dmsp_u_f152003;dmsp_u_f152004;dmsp_u_f152005;dmsp_u_f152006;dmsp_u_f152007;dmsp_u_f162004;dmsp_u_f162005;dmsp_u_f162006;dmsp_u_f162007;dmsp_u_f162008;dmsp_u_f162009;dmsp_u_f182010;dmsp_u_f182011;dmsp_u_f182012;dmsp_u_f182013;dmsp_c_f121996;dmsp_c_f121999;dmsp_c_f122000;dmsp_c_f142004;dmsp_c_f142002;dmsp_c_f162005;dmsp_c_f162010;dmsp_c_f162011;viirs_npp_201204;viirs_npp_201205;viirs_npp_201206;viirs_npp_201207;viirs_npp_201208;viirs_npp_201209;viirs_npp_201210;viirs_npp_201211;viirs_npp_201212;viirs_npp_201301;viirs_npp_201302;viirs_npp_201303;viirs_npp_201304;viirs_npp_201305;viirs_npp_201306;viirs_npp_201307;viirs_npp_201308;viirs_npp_201309;viirs_npp_201310;viirs_npp_201311;viirs_npp_201312;viirs_npp_201401;viirs_npp_201402;viirs_npp_201403;viirs_npp_201404;viirs_npp_201405;viirs_npp_201406;viirs_npp_201407;viirs_npp_201408;viirs_npp_201409;viirs_npp_201410;viirs_npp_201411;viirs_npp_201412;viirs_npp_201501;viirs_npp_201502;viirs_npp_201503;viirs_npp_201504;viirs_npp_201505;viirs_npp_201506;viirs_npp_201507;viirs_npp_201508;viirs_npp_201509;viirs_npp_201510;viirs_npp_201511;viirs_npp_201512;viirs_npp_201500;viirs_npp_201601;viirs_npp_201602;viirs_npp_201603;viirs_npp_201604;viirs_npp_201605;viirs_npp_201606;viirs_npp_201607;viirs_npp_201608;viirs_npp_201609;viirs_npp_201610;viirs_npp_201611;viirs_npp_201612;viirs_npp_201701;viirs_npp_201702;viirs_npp_201703;viirs_npp_201704;viirs_npp_201705;viirs_npp_201706;viirs_npp_201707;viirs_npp_201708;viirs_npp_201709;viirs_npp_201710;viirs_npp_201711;viirs_npp_201712;viirs_npp_201801;viirs_npp_201802;viirs_npp_201803;viirs_npp_201804;viirs_npp_201805</textarea><br />
+        geometry<br />
+        <input style="width:500px" id="geometry" type="text" name="geometry" value="14.505,46.05" placeholder="geometry" /><br />
+        <button id="submit_executeUpload" class="defaultButton fileBrowse" onclick="submitForm();" type="button">Submit</button><br /><br />
+        <pre id="submit_result"></pre>
+    </div>
+    <script>
+        $("#querytype").change(function () {
+            if ($("#querytype").val() == 'point') {
+                $("#geometry").val("14.505,46.05");
+            } else {
+                $("#geometry").val("LINESTRING(2 46,4 46,4 45,2 46,2 46)");
+            }
+        });
+    </script>
+</body>
+</html>
