@@ -1,7 +1,7 @@
 # lighttrends
 Radiance Light Trends 
 
-Radiance Light Trends is a software for selecting regions of Earth and examining the trend in light emissions observed by satellite.
+Radiance Light Trends is a software for selecting regions of Earth and examining the trend in light emissions observed by satellite. Working application available at <https://lighttrends.lightpollutionmap.info/>
 
 See Documentation.docx for more detail
 .
