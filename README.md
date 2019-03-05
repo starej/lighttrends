@@ -1,8 +1,10 @@
 # lighttrends
-Lighttrends mapping application
+Radiance Light Trends 
 
-Lighttrends application is a GIS web application that is designed to quickly display information about radiance trends at a specific location. It uses data from two satellite system DMSP and VIIRS operated by NOAA. New VIIRS layers are added automatically as soon as NOAA makes them available to public.
+Radiance Light Trends is a software for selecting regions of Earth and examining the trend in light emissions observed by satellite.
 
-See Documentation.docx for more detail.
+See Documentation.docx for more detail
+.
+Copyright (C) 2019, German Research Centre for Geosciences <http://gfz-potsdam.de>. The application was programmed by Deneb, Geoinformation solutions, Jurij Stare s.p <starej@t-2.net>.
 
 Licensed under the European Union Public Licence (EUPL) v. 1.2
