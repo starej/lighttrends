@@ -1,3 +1,4 @@
+/*
 ############################################################
 # 
 # Radiance Light Trends is a software for selecting regions of Earth and examining the trend in light emissions observed by satellite.
@@ -15,6 +16,7 @@
 # Unless required by applicable law or agreed to in writing, software distributed under the Licence is distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the Licence for the specific language governing permissions and limitations under the Licence.
 # 
 ############################################################
+*/
 import jQuery from "jquery";
 $ = window.$ = window.jQuery = jQuery;
 import 'jquery-ui-bundle';
