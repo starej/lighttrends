@@ -1,3 +1,20 @@
+############################################################
+# 
+# Radiance Light Trends is a software for selecting regions of Earth and examining the trend in light emissions observed by satellite.
+# Copyright (C) 2019, German Research Centre for Geosciences <http://gfz-potsdam.de>. The application was programmed by Deneb, Geoinformation solutions, Jurij Stare s.p <starej@t-2.net>.
+# 
+# Parts of this program were developed within the context of the following publicly funded Project:
+# - ERA-PLANET (via GEOEssential project), European Union’s Horizon 2020 research and innovation programme grant agreement no. 689443 <http://www.geoessential.eu/>
+# 
+# Licensed under the EUPL, Version 1.2 or - as soon they will be approved by the European Commission - subsequent versions of the EUPL (the "Licence"), complemented with the following provision: For the scientific transparency and verification of results obtained and communicated to the public after using a modified version of the work, You (as the recipient of the source code and author of this modified version, used to produce the published results in scientific communications) commit to make this modified source code available in a repository that is easily and freely accessible for a duration of five years after the communication of the obtained results.
+# 
+# You may not use this work except in compliance with the Licence.
+# 
+# You may obtain a copy of the Licence at: https://joinup.ec.europa.eu/software/page/eupl
+# 
+# Unless required by applicable law or agreed to in writing, software distributed under the Licence is distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the Licence for the specific language governing permissions and limitations under the Licence.
+# 
+############################################################
 import jQuery from "jquery";
 $ = window.$ = window.jQuery = jQuery;
 import 'jquery-ui-bundle';
