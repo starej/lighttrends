@@ -1,22 +1,3 @@
-/*
-############################################################
-# 
-# Radiance Light Trends is a software for selecting regions of Earth and examining the trend in light emissions observed by satellite.
-# Copyright (C) 2019, German Research Centre for Geosciences <http://gfz-potsdam.de>. The application was programmed by Deneb, Geoinformation solutions, Jurij Stare s.p <starej@t-2.net>.
-# 
-# Parts of this program were developed within the context of the following publicly funded Project:
-# - ERA-PLANET (via GEOEssential project), European Union’s Horizon 2020 research and innovation programme grant agreement no. 689443 <http://www.geoessential.eu/>
-# 
-# Licensed under the EUPL, Version 1.2 or - as soon they will be approved by the European Commission - subsequent versions of the EUPL (the "Licence"), complemented with the following provision: For the scientific transparency and verification of results obtained and communicated to the public after using a modified version of the work, You (as the recipient of the source code and author of this modified version, used to produce the published results in scientific communications) commit to make this modified source code available in a repository that is easily and freely accessible for a duration of five years after the communication of the obtained results.
-# 
-# You may not use this work except in compliance with the Licence.
-# 
-# You may obtain a copy of the Licence at: https://joinup.ec.europa.eu/software/page/eupl
-# 
-# Unless required by applicable law or agreed to in writing, software distributed under the Licence is distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the Licence for the specific language governing permissions and limitations under the Licence.
-# 
-############################################################
-*/
 import jQuery from "jquery";
 $ = window.$ = window.jQuery = jQuery;
 import 'jquery-ui-bundle';
@@ -37,7 +18,7 @@ import VectorSource from 'ol/source/Vector.js';
 import {transform} from 'ol/proj.js';
 import TileGrid from 'ol/tilegrid/TileGrid.js';
 import ol_Interaction_Draw from 'ol/interaction/Draw.js';
-import {defaults as defaultControls, ScaleLine} from 'ol/control.js';
+import {defaults as defaultControls, ScaleLine, Attribution} from 'ol/control.js';
 import ol_Feature from 'ol/Feature.js';
 import ol_Geom_Point from 'ol/geom/Point.js';
 import ol_Geom_Polygon from 'ol/geom/Polygon.js';
@@ -58,9 +39,9 @@ import datatables from 'datatables';
 // default language
 var language = "en";
 // max size of the drawn polygon
-var maxPolygonSize = 5e9; // sq. meters
+var maxPolygonSize = 1e10; // sq. meters
 // app version 
-var version = "App. Version 0.7.6 beta";
+var version = "App. Version 1.0.3";
 // various global variables
 var labels, map, layerList, draw, formData, svgString, SVGChart, monthNames, usageStatisticsHTML, treeView, languages;
 var c_mode = 0;
@@ -76,7 +57,7 @@ var serviceUrl5 = serviceUrl + "getrasterpolygon.ashx";
 
 var currentLayerLights = "";
 const seriesNames = ['DMSP F10','DMSP F12','DMSP F14','DMSP F15','DMSP F16','DMSP F18','DMSP (cal.)','VIIRS NPP','VIIRS NPP2'];
-const Bkey = "BING MAPS KEY";
+const Bkey = "hUVe19f6SzYXsN1ha4yU~Mhp5LMs1dbWhj9qvFqir2A~AkvKw-1qKzfiq7rmw5Pudr70N9IM9cyw8x63iKwBGzKv6Iq5rtSwf3BuHiG1eFnz";
 var datasets = [];
 var chartValues = [];
 var graphData = {};
@@ -224,6 +205,8 @@ var scaleLine = new ScaleLine({
 	units: 'metric', 
 	minWidth : 100
 });
+
+var attribution = new Attribution({collapsible: false});
 	
 // map definition
 map = new Map({
@@ -232,7 +215,7 @@ map = new Map({
   renderer: 'canvas',
   loadTilesWhileAnimating: true,
   loadTilesWhileInteracting: true,
-  controls: defaultControls({ attribution: false, rotate:false, zoom: false }).extend([ scaleLine ]),
+  controls: defaultControls({ attribution: false, rotate:false, zoom: false }).extend([ scaleLine, attribution]),
   view: new View({
 	center: [0, 4000000],
 	extent: [-20037600,-9611615,20037600,12932243],
@@ -283,6 +266,11 @@ $("#searchBox").autocomplete({
 				item.point.coordinates = arr;
 				item.data.point.coordinates = [parseFloat(arr[0]), parseFloat(arr[1])];
 				item.name = arr[0] + "," + arr[1];
+				
+				// check if coordinates are valid, return otherwise
+				if (Math.abs(item.data.point.coordinates[0]) > 180 || Math.abs(item.data.point.coordinates[1]) > 90 ) {
+					return;
+				}			
 				
 				//var result = data.resourceSets[0];
 				var result = item;
@@ -512,8 +500,11 @@ $("#usageStatistics_select").chosen({disable_search_threshold: 10, width: "110px
 	usageStatistics($(this).chosen().val());
 });
 
+// Bing Maps attribution
 
-
+$("#BingMapsAttribution").click( function(evt) {
+	$(".ol-attribution").fadeToggle();
+});
 
 // ----  END INIT
 // --------  END INIT
@@ -612,7 +603,10 @@ function makeLayerTreeView() {
 			initializeDialogWindowsAndMenus();
 			
 			// show layerConfigWindow
-			$("#layerConfigWindow").fadeIn();			
+			$("#layerConfigWindow").fadeIn();
+
+			// refresh overlay by resize event
+			$(window).trigger("resize");
 		}
 	});
 }
@@ -1607,7 +1601,7 @@ function initializeDialogWindowsAndMenus() {
 					title: labels.tour_4_title.html,
 					content: labels.tour_4_content.html,
 					target: "analysisConfigWindow",
-					placement: "right"
+					placement: "right"					
 				}, {
 					title: labels.tour_5_title.html,
 					content: labels.tour_5_content.html,
@@ -1704,7 +1698,9 @@ function initializeDialogWindowsAndMenus() {
 								map.removeInteraction(evt);
 							}
 							
-						}, this)
+						}, this);
+						// Select sum as aggregation method, so later on tour can show weighted sum options
+						$("#analysisConfigWindow_areaOption1").val("sum").trigger('chosen:updated');
 					}
 
 				}, {
@@ -1748,6 +1744,8 @@ function initializeDialogWindowsAndMenus() {
 					placement: "top",
 					onShow: function () {
 						$("#analysisConfigWindow_generateChartButton").addClass("tourHighlight");
+						// Select sum as aggregation method, so later on tour can show weighted sum options
+						$("#analysisConfigWindow_areaOption1").val("sum").trigger('chosen:updated');
 					},
 					onPrev: function () {
 						$("#analysisConfigWindow_generateChartButton").removeClass("tourHighlight");
@@ -1762,6 +1760,14 @@ function initializeDialogWindowsAndMenus() {
 					placement: "left",
 					showPrevButton: true,
 					yOffset: 50,
+					width: 250
+				}, {
+					title: labels.tour_26_title.html,
+					content: labels.tour_26_content.html,
+					target: "chartValuesContainer",
+					placement: "top",
+					showPrevButton: true,
+					yOffset: 0,
 					width: 250,
 					onNext: function () {
 						// close config window
@@ -1932,7 +1938,7 @@ function initializeDialogWindowsAndMenus() {
 		// end tour if config window is closed by the user while on tour mode
 		// except when tour at certain position
 		var tourStep = hopscotch.getCurrStepNum();
-		if (tourStep != 0 && tourStep != 10 && tourStep != 18) {
+		if (tourStep != 0 && tourStep != 10 && tourStep != 19) {
 			hopscotch.endTour(true);
 			$("#analysisConfigWindow_generateChartButton").removeClass("tourHighlight");
 		}
@@ -1944,7 +1950,7 @@ function initializeDialogWindowsAndMenus() {
 		
 		// end tour if chart window is closed by the user while on tour mode
 		var tourStep = hopscotch.getCurrStepNum();
-		var tourStepsSkip = [7,8,9,16];
+		var tourStepsSkip = [7,8,9,17,18];
 		if ($.inArray(tourStep, tourStepsSkip) != -1) {
 			hopscotch.endTour(true);
 		}
@@ -2150,57 +2156,99 @@ function initializeDialogWindowsAndMenus() {
 	// change trendline type on container click
 	$('input[type=radio][name=t_type]').change(function() {
 		var datasets = SVGChart.config.data.datasets;
-		if (this.value == 'linear') {
-			$("#chartNumbers_eq1").hide();
-			$("#chartNumbers_eq2").show();
-			$("#chartNumbersContainer").fadeIn();
-			// find trendline dataset in chart and turn it off/ond
-			for (let i = 0; i < datasets.length; i++) {
-				var label = datasets[i].label;
-				if (label == "Trendline1") {
-					SVGChart.config.data.datasets[i].hidden = true;
-				}
-				if (label == "Trendline2") {
-					SVGChart.config.data.datasets[i].hidden = false;
-				}
-				if (label == "Trendline") {
-					SVGChart.config.data.datasets[i].hidden = false;
-				}				
-			}
-		} else if (this.value == 'exponential') {
-			$("#chartNumbers_eq2").hide();
-			$("#chartNumbers_eq1").show();
-			$("#chartNumbersContainer").fadeIn();			
-			for (let i = 0; i < datasets.length; i++) {
-				var label = datasets[i].label;
-				if (label == "Trendline1") {
-					SVGChart.config.data.datasets[i].hidden = false;
-				}
-				if (label == "Trendline2") {
-					SVGChart.config.data.datasets[i].hidden = true;
-				}
-				if (label == "Trendline") {
-					SVGChart.config.data.datasets[i].hidden = false;
-				}				
-			}
-		} else {
-			//$("#chartNumbers_eq2").hide();
-			//$("#chartNumbers_eq1").hide();
-			$("#chartNumbersContainer").fadeOut();
-			
-			for (let i = 0; i < datasets.length; i++) {
-				var label = datasets[i].label;
-				if (label == "Trendline1") {
-					SVGChart.config.data.datasets[i].hidden = true;
-				}
-				if (label == "Trendline2") {
-					SVGChart.config.data.datasets[i].hidden = true;
-				}
-				if (label == "Trendline") {
-					SVGChart.config.data.datasets[i].hidden = true;
-				}
-			}			
+		
+		var trendType = 0;
+		if ($("#chartValues_0").is(':checked') && this.value == 'exponential') {
+			trendType = 1
+		} else if ($("#chartValues_1").is(':checked') && this.value == 'exponential') {
+			trendType = 3
+		} else if ($("#chartValues_0").is(':checked') && this.value == 'linear') {
+			trendType = 2
+		} else if ($("#chartValues_1").is(':checked') && this.value == 'linear') {
+			trendType = 4
 		}
+	
+		for (let i = 0; i < datasets.length; i++) {
+			var label = datasets[i].label;
+			
+			// hide all trendline except correct one
+			if (label == "Trendline1" || label == "Trendline2" || label == "Trendline3" || label == "Trendline4" || label == "Trendline") {
+				if (label == "Trendline" + trendType) {
+					SVGChart.config.data.datasets[i].hidden = false;
+				} else {
+					SVGChart.config.data.datasets[i].hidden = true;
+				}
+				
+			}
+			if (label == "Trendline" && $("#chartTrendlineType_N").is(':checked')) {
+				SVGChart.config.data.datasets[i].hidden = true;
+				$("#chartNumbersContainer").fadeOut();
+			}
+			if (label == "Trendline" && !$("#chartTrendlineType_N").is(':checked')) {
+				SVGChart.config.data.datasets[i].hidden = false;
+				$("#chartNumbersContainer").fadeIn();
+			}
+		}
+		
+		// hide all equations and display correct one
+		var equationsDivs = $("#chartNumbers").children();
+		for (let i = 0; i < equationsDivs.length; i++) {
+			$(equationsDivs[i]).hide();			
+		}
+		$("#chartNumbers_eq" + trendType).show();
+		
+		// update chart
+		SVGChart.update();
+	});
+	
+	// change radiance value weigting
+	$('input[type=radio][name=v_type]').change(function() {
+		var datasets = SVGChart.config.data.datasets;
+		
+		var trendType = 0;
+		if ($("#chartTrendlineType_E").is(':checked') && this.value == '1') {
+			trendType = 1
+		} else if ($("#chartTrendlineType_L").is(':checked') && this.value == '1') {
+			trendType = 2
+		} else if ($("#chartTrendlineType_E").is(':checked') && this.value == '0') {
+			trendType = 3
+		} else if ($("#chartTrendlineType_L").is(':checked') && this.value == '0') {
+			trendType = 4
+		}
+			
+		for (let i = 0; i < datasets.length; i++) {
+			var label = datasets[i].label;
+			
+			// swap y (unweighted) and z (weighted) values on the chart
+			if (label.indexOf("Trendline") == -1) {
+				for (let j = 0; j < datasets[i].data.length; j++) {
+					
+					let dataset_y = datasets[i].data[j].y;
+					let dataset_z = datasets[i].data[j].z;
+					datasets[i].data[j].y = dataset_z;
+					datasets[i].data[j].z = dataset_y;					
+				}				
+			}
+			
+			// hide all trendline except correct one
+			if (label == "Trendline1" || label == "Trendline2" || label == "Trendline3" || label == "Trendline4") {
+				if (label == "Trendline" + trendType) {
+					SVGChart.config.data.datasets[i].hidden = false;
+				} else {
+					SVGChart.config.data.datasets[i].hidden = true;
+				}
+				
+			}
+	
+		}
+
+		// hide all equations and display correct one
+		var equationsDivs = $("#chartNumbers").children();
+		for (let i = 0; i < equationsDivs.length; i++) {
+			$(equationsDivs[i]).hide();			
+		}
+		$("#chartNumbers_eq" + trendType).show();
+		
 		// update chart
 		SVGChart.update();
 	});	
@@ -2474,12 +2522,14 @@ function startChart(json, type) {
 	for (var key in statisticsObj) {
 		var rasterColumnName = key;
 		var rasterColumnValue;
+		var rasterColumnValueWeighted;
 		var rasterPixelCount;
 		
 		if (type == 'point'){
 			rasterColumnValue = statisticsObj[key];
 		} else if (type == 'sum'){
 			rasterColumnValue = statisticsObj[key][1];
+			rasterColumnValueWeighted = statisticsObj[key][3];
 			rasterPixelCount = statisticsObj[key][0];
 		} else if (type == 'mean'){
 			rasterColumnValue = statisticsObj[key][2];
@@ -2516,12 +2566,14 @@ function startChart(json, type) {
 				
 				XYdata.x = d3.toISOString();	
 				XYdata.y = rasterColumnValue;
+				XYdata.z = rasterColumnValueWeighted;
 				XYdata.label = layerList[rasterColumnName].datestart + " - " + layerList[rasterColumnName].dateend;
 				XYdata.count = rasterPixelCount;
 			} else if (i == 1){
 				//insert a 3rd point to get unconnected lines
 				XYdata.x = layerList[rasterColumnName].dateend + " 23:59:59";
 				XYdata.y = null;
+				XYdata.z = null;
 			}
 			
 			
@@ -2649,11 +2701,16 @@ function startChart(json, type) {
 		}
 	}
 	
+	// set radiance weighted values off by default
+	$("#chartValues_0").prop("checked", true);
+	$("#chartValues_1").prop("checked", false);
+	
 //add trendline if at least 3 datapoints exist
 
 	var x_trend = [];
 	var x_trend_all = [];
 	var y_trend = [];
+	var y_trend_w = [];
 	
 	for (var j = 0; j < AllSeries.length; j++){
 		for (var i = 0; i < AllSeries[j].length; i++){
@@ -2669,6 +2726,7 @@ function startChart(json, type) {
 				if (AllSeries[j][i].y != null) {				
 					x_trend.push(AllSeries[j][i].x);
 					y_trend.push(AllSeries[j][i].y);
+					y_trend_w.push(AllSeries[j][i].z);
 				}
 				x_trend_all.push(AllSeries[j][i].x);
 			} else {
@@ -2679,6 +2737,13 @@ function startChart(json, type) {
 					var newY = (AllSeries[j][i].y + oldY)/2
 					y_trend[Y_index] = newY;
 				}
+				if (AllSeries[j][i].z != null) {
+					var X_value = AllSeries[j][i].x;
+					var Y_index = x_trend.findIndex(function(age) {return age == X_value;});
+					var oldY = y_trend_w[Y_index];
+					var newY = (AllSeries[j][i].z + oldY)/2
+					y_trend_w[Y_index] = newY;
+				}
 			}			
 		}
 	}	
@@ -2687,20 +2752,30 @@ function startChart(json, type) {
 	if (x_trend.length >= 3){
 					
 		var dataReg = [];
+		var dataReg_w = [];
 		for (var i = 0; i < x_trend.length; i++){
 			// same epoch as excel 1900
-			dataReg.push([Math.round(Date.parse(x_trend[i])/86400000 + 25568.5),y_trend[i]])
+			dataReg.push([Math.round(Date.parse(x_trend[i])/86400000 + 25568.5),y_trend[i]]);
+			dataReg_w.push([Math.round(Date.parse(x_trend[i])/86400000 + 25568.5),y_trend_w[i]]);
 		}
 		
-		//Exponential regression
+		//Exponential regression for original and weighted data
 		const resultRegExp = regression.exponential(dataReg, {
 			precision: 16,
 		});
+
+		const resultRegExp_w = regression.exponential(dataReg_w, {
+			precision: 16,
+		});
 		
-		//Linear regression
+		//Linear regression for original and weighted data
 		const resultRegLin = regression.linear(dataReg, {
 			precision: 16,
-		});		
+		});
+
+		const resultRegLin_w = regression.linear(dataReg_w, {
+			precision: 16,
+		});	
 		
 		// create trendline datasets
 		$("#chartNumbers").empty();
@@ -2709,11 +2784,15 @@ function startChart(json, type) {
 		
 		for (var j = 0; j < 2; j++){
 			var trendline = [];
+			var trendline_w = [];
 			var prevY = 0;
+			var prevY_w = 0;
 			var prevX = 0;
+			var prevX_w = 0;
 			var changePerDay = [];
+			var changePerDay_w = [];
 			var changePerYear = 0;
-
+			var changePerYear_w = 0;
 					
 			for (var i = 0; i < x_trend_all.length; i++){
 				
@@ -2721,39 +2800,63 @@ function startChart(json, type) {
 				//let b = resultRegExp.equation[1];
 				let x = Math.round(Date.parse(x_trend_all[i])/86400000 + 25568.5);	
 					//x = x - Math.round(Date.parse(x_trend_all[0])/86400000 + 25568.5) + 1;		
-				let xy_obj = {};		
+				let xy_obj = {};
+				let xy_obj_w = {};
 				xy_obj.x = x_trend_all[i];
+				xy_obj_w.x = x_trend_all[i];
+				
 				if (j == 0) {
 					xy_obj.y = resultRegExp.predict(x)[1];
+					xy_obj_w.y = resultRegExp_w.predict(x)[1];
+					
 				} else {
 					xy_obj.y = resultRegLin.predict(x)[1];
+					xy_obj_w.y = resultRegLin_w.predict(x)[1];
 				}
 				
 				xy_obj.label = ""; 
+				xy_obj_w.label = ""; 
 				trendline.push(xy_obj);
+				trendline_w.push(xy_obj_w);
 				
 				
 				if (i > 0) {
 					let a = (xy_obj.y - prevY)/(x - prevX);
+					let a_w = (xy_obj_w.y - prevY_w)/(x - prevX_w);
 					changePerDay.push(a);
+					changePerDay_w.push(a_w);
 				}
 				prevY = xy_obj.y;
+				prevY_w = xy_obj_w.y;
 				prevX = x;
+				prevX_w = x;
 			}	
 			var changePerDayAvg =  changePerDay.map(function(x,i,arr){return x/arr.length}).reduce(function(a,b){return a + b});
+			var changePerDayAvg_w =  changePerDay_w.map(function(x,i,arr){return x/arr.length}).reduce(function(a,b){return a + b});
 			
 			var chartNumbersHTML = ""
 				if (j == 0) {
+					//original
 					changePerYear = (resultRegExp.predict(Math.round(Date.parse(x_trend_all[0])/86400000 + 25568.5 + 364.25))[1]/resultRegExp.predict(Math.round(Date.parse(x_trend_all[0])/86400000 + 25568.5))[1]) - 1;
 					chartNumbersHTML += "<div id='chartNumbers_eq1'><span id='chartNumbers_equation1' class='label eq1' title='"+ labels.chartNumbers_equation1.title +"'>Y = " + formatSciNumber(resultRegExp.equation[0].toExponential(2))  + " * e<sup>"+ formatSciNumber(resultRegExp.equation[1].toExponential(2)) +" * x</sup></span><br/>";		
 					chartNumbersHTML += "<span id='chartNumbers_coef1' class='label eq1' title='"+ labels.chartNumbers_coef.title +"'>R² = "+ Math.round(resultRegExp.r2 * 100)/100 +"</span></br>";
-					chartNumbersHTML += "<span id='chartNumbers_delta1' class='label eq1' title='"+ labels.chartNumbers_delta.title +"'>&Delta;: " + Math.round(changePerYear * 10000)/100 + "% / </span><span id='chartNumbers_delta_year1' class='label  eq1'>"+ labels.chartNumbers_delta_year1.html +"</span>";
-	
+					chartNumbersHTML += "<span id='chartNumbers_delta1' class='label eq1' title='"+ labels.chartNumbers_delta.title +"'>&Delta;: " + Math.round(changePerYear * 10000)/100 + "% / </span><span id='chartNumbers_delta_year1' class='label  eq1'>"+ labels.chartNumbers_delta_year1.html +"</span></div>";
+					//weighted
+					changePerYear_w = (resultRegExp_w.predict(Math.round(Date.parse(x_trend_all[0])/86400000 + 25568.5 + 364.25))[1]/resultRegExp_w.predict(Math.round(Date.parse(x_trend_all[0])/86400000 + 25568.5))[1]) - 1;
+					chartNumbersHTML += "<div id='chartNumbers_eq3' style='display:none;><span id='chartNumbers_equation3' class='label eq1' title='"+ labels.chartNumbers_equation1.title +"'>Y = " + formatSciNumber(resultRegExp_w.equation[0].toExponential(2))  + " * e<sup>"+ formatSciNumber(resultRegExp_w.equation[1].toExponential(2)) +" * x</sup></span><br/>";		
+					chartNumbersHTML += "<span id='chartNumbers_coef3' class='label eq1' title='"+ labels.chartNumbers_coef.title +"'>R² = "+ Math.round(resultRegExp.r2 * 100)/100 +"</span></br>";
+					chartNumbersHTML += "<span id='chartNumbers_delta3' class='label eq1' title='"+ labels.chartNumbers_delta.title +"'>&Delta;: " + Math.round(changePerYear_w * 10000)/100 + "% / </span><span id='chartNumbers_delta_year3' class='label  eq1'>"+ labels.chartNumbers_delta_year3.html +"</span></div>";	
 				} else {
+					//original
 					changePerYear = resultRegLin.predict(Math.round(Date.parse(x_trend_all[0])/86400000 + 25568.5 + 364.25))[1] - resultRegLin.predict(Math.round(Date.parse(x_trend_all[0])/86400000 + 25568.5))[1];
 					chartNumbersHTML += "<div id='chartNumbers_eq2' style='display:none;'><span id='chartNumbers_equation2' class='label eq2' title='"+ labels.chartNumbers_equation2.title +"'>Y = " + formatSciNumber(resultRegLin.equation[0].toExponential(2)) + " * x + "+ formatSciNumber(resultRegLin.equation[1].toExponential(2)) +"</span><br/>";
 					chartNumbersHTML += "<span id='chartNumbers_coef2' class='label eq2'  title='"+ labels.chartNumbers_coef.title +"'>R² = "+ Math.round(resultRegLin.r2 * 100)/100 +"</span></br>";
 					chartNumbersHTML += "<span id='chartNumbers_delta2' class='label eq2' title='"+ labels.chartNumbers_delta.title +"'>&Delta;: " + formatSciNumber(changePerYear.toExponential(2)) + " " + getScaleLabel() + " / </span><span id='chartNumbers_delta_year2' class='label eq2'>"+ labels.chartNumbers_delta_year2.html +"</span></div>";
+					//weighted
+					changePerYear_w = resultRegLin_w.predict(Math.round(Date.parse(x_trend_all[0])/86400000 + 25568.5 + 364.25))[1] - resultRegLin_w.predict(Math.round(Date.parse(x_trend_all[0])/86400000 + 25568.5))[1];
+					chartNumbersHTML += "<div id='chartNumbers_eq4' style='display:none;'><span id='chartNumbers_equation4' class='label eq2' title='"+ labels.chartNumbers_equation2.title +"'>Y = " + formatSciNumber(resultRegLin_w.equation[0].toExponential(2)) + " * x + "+ formatSciNumber(resultRegLin_w.equation[1].toExponential(2)) +"</span><br/>";
+					chartNumbersHTML += "<span id='chartNumbers_coef4' class='label eq2'  title='"+ labels.chartNumbers_coef.title +"'>R² = "+ Math.round(resultRegLin.r2 * 100)/100 +"</span></br>";
+					chartNumbersHTML += "<span id='chartNumbers_delta4' class='label eq2' title='"+ labels.chartNumbers_delta.title +"'>&Delta;: " + formatSciNumber(changePerYear_w.toExponential(2)) + " " + getScaleLabel() + " / </span><span id='chartNumbers_delta_year4' class='label eq2'>"+ labels.chartNumbers_delta_year4.html +"</span></div>";
 					chartNumbersHTML = chartNumbersHTML.replace("+ -", "- ");
 				}			
 		
@@ -2777,28 +2880,57 @@ function startChart(json, type) {
 				lineTension: 0.1,
 				borderDash: [10, 10]
 			};
+			var datasetObj_w = {
+				backgroundColor: "rgba(255, 0, 0, 0.3)",
+				borderColor: "rgba(255, 0, 0, 0.3)",
+				pointStyle: "dash",
+				radius: 2,
+				pointRadius: 2,
+				pointHitRadius: 2,
+				pointHoverRadius: 2,
+				pointHoverBorderWidth: 2,
+				fill: false,
+				data: trendline_w,
+				spanGaps: true,
+				//cubicInterpolationMode: 'default',
+				//steppedLine: true,
+				lineTension: 0.1,
+				borderDash: [10, 10]
+			};
+			
+			//hide all trendline lines at start, except exponential original
 			if (j == 1) {
 				datasetObj.hidden = true;
-				datasetObj.label = "Trendline2";
+				datasetObj_w.hidden = true;
+				
+				datasetObj.label = "Trendline2"; // linear
+				datasetObj_w.label = "Trendline4"; // linear
 			} else {
-				datasetObj.label = "Trendline1";
+				datasetObj_w.hidden = true;
+				datasetObj.label = "Trendline1"; // exponential
+				datasetObj_w.label = "Trendline3"; // exponential
 			}
 			// hide exponential and switch to linear if exponential not possible because of negative values
 			if (isNaN(resultRegExp.r2)) {
 				if (j == 1) {
 					datasetObj.hidden = false;
+					datasetObj_w.hidden = true;
 					
 					// set trendline radio button to linear and disable trendline radio buttons	)
 					$("#chartTrendlineType_E").prop("disabled", true);
 					$("#chartTrendlineType_L").prop("checked", true);
-					$("#chartNumbers_eq1").hide();	
-					$("#chartNumbers_eq2").show();				
+					$("#chartNumbers_eq1").hide();
+					$("#chartNumbers_eq1_w").hide();
+					$("#chartNumbers_eq2").show();
+					$("#chartNumbers_eq2_w").hide();
 				} else {
-					datasetObj.hidden = true;			
+					datasetObj.hidden = true;
+					datasetObj_w.hidden = true;					
 				}			
 			}
 			
-			datasets.push(datasetObj);		
+			datasets.push(datasetObj);
+			datasets.push(datasetObj_w);			
 		}
 	
 
@@ -2821,13 +2953,15 @@ function startChart(json, type) {
 			lineTension: 0.1,
 			borderDash: [10, 10]
 		});
-		// show trendline attributes below chart
+		// show trendline windows below chart
 		$("#chartNumbersContainer").fadeIn();
 		$("#chartTrendlineTypeContainer").fadeIn();
+		$("#chartValuesContainer").fadeIn();
 	} else {
-		// hide trendline attributes below chart
+		// hide trendline windows below chart
 		$("#chartNumbersContainer").fadeOut();
 		$("#chartTrendlineTypeContainer").fadeOut();
+		$("#chartValuesContainer").fadeOut();
 	}
 
 	// show export options below chart if at least one datapoint exists
@@ -2862,7 +2996,7 @@ function startChart(json, type) {
 					usePointStyle: true,
 					filter: function(item, chart) {
 						// Remove trendline from legend
-						if (item.text == "Trendline1" || item.text == "Trendline2") {
+						if (item.text == "Trendline1" || item.text == "Trendline2" || item.text == "Trendline3" || item.text == "Trendline4") {
 							return false;
 						} else {
 							if (item.text == "Trendline" && $("#chartTrendlineType_N").is(':checked') == true) {
@@ -2906,7 +3040,7 @@ function startChart(json, type) {
 				filter: function (tooltipItem, data) {
 					// do not show tooltips for trendline
 				   var label = data.datasets[tooltipItem.datasetIndex].label
-				   if (label == "Trendline1" || label == "Trendline2") {
+				   if (label == "Trendline1" || label == "Trendline2" || label == "Trendline3" || label == "Trendline4") {
 					 return false;
 				   } else {
 					 return true;
@@ -2981,6 +3115,14 @@ function startChart(json, type) {
 	}
 	//hide loading icon
 	$('#loadingIconGenerateChart').fadeToggle();
+	
+	//hide Radiance values property window if pixel mode is selected
+	if (type == 'point' || type == 'mean'){
+		$("#chartValuesContainer").hide();		
+	} else {
+		$("#chartValuesContainer").show();
+	}
+	
 }
 
 //color for each series
@@ -3611,12 +3753,19 @@ function readTextFile(filePath) {
 				});
 			} catch(err) { 
 				// show error
+				showErrorPopup(labels.resultError_4.html, labels.resultError_5.html);							
+				return false;
+			}
+			// make sure it's a polygon geometry
+			if (feature.getGeometry().getType() == "Polygon") {
+				drawFeature(feature);
+			} else {
+				// show error
 				showErrorPopup(labels.resultError_4.html, labels.resultError_5.html);
-							
 				return false;
 			}
 			
-			drawFeature(feature);
+			
 	
 		};
 		reader.readAsText(filePath.files[0]);

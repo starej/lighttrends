@@ -1,9 +1,28 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 	<head>
 		<title>Radiance light trends</title>
 		<meta http-equiv="content-type" content="text/html;charset=UTF-8" />
 		<meta id='viewport' content='width=device-width, initial-scale=1' name='viewport'/>
+		<meta name="description" content="Radiance Light Trends is a software for selecting regions of Earth and examining the trend in light emissions observed by satellite."/>
+		<meta name="keywords" content="radiance lighttrends light pollution map VIIRS DMSP"/>
+		<link rel="apple-touch-icon" sizes="57x57" href="/apple-icon-57x57.png">
+		<link rel="apple-touch-icon" sizes="60x60" href="/apple-icon-60x60.png">
+		<link rel="apple-touch-icon" sizes="72x72" href="/apple-icon-72x72.png">
+		<link rel="apple-touch-icon" sizes="76x76" href="/apple-icon-76x76.png">
+		<link rel="apple-touch-icon" sizes="114x114" href="/apple-icon-114x114.png">
+		<link rel="apple-touch-icon" sizes="120x120" href="/apple-icon-120x120.png">
+		<link rel="apple-touch-icon" sizes="144x144" href="/apple-icon-144x144.png">
+		<link rel="apple-touch-icon" sizes="152x152" href="/apple-icon-152x152.png">
+		<link rel="apple-touch-icon" sizes="180x180" href="/apple-icon-180x180.png">
+		<link rel="icon" type="image/png" sizes="192x192"  href="/android-icon-192x192.png">
+		<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+		<link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png">
+		<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+		<link rel="manifest" href="/manifest.json">
+		<meta name="msapplication-TileColor" content="#ffffff">
+		<meta name="msapplication-TileImage" content="/ms-icon-144x144.png">
+		<meta name="theme-color" content="#ffffff">
 		<link rel="stylesheet" href="index.css" type="text/css" />	
 		<link rel="stylesheet" href="node_modules/jstree/dist/themes/default/style.min.css" />
 		<link rel="stylesheet" href="node_modules/chosen-js/chosen.min.css" />
@@ -30,24 +49,13 @@
 								<option id="usageStatistics_select_4" value="year" class="label">year</option>
 						</select>
 					</div>
-					<table id="usageStatistics_data" class="display" width="100%">
+					<table id="usageStatistics_data" class="display" style="width:100%">
 						<thead id='statisticsHeader'></thead>
 					</table>			
 				</div>
 			</div>
 		</div>
-		
-		<!-- NOT USED ANYMORE -->
-		<div id="topBar_helpContent" class="topBar_modal">
-			<div id="topBar_helpContentWindow" class="topBar_modal-content">			
-				<div class="ol-popup-closer fsContent_closer"></div>
-				<h3 id="topBar_helpContent_label" style="margin: 5px 0px 10px 25px;" class="label">Help</h3>
-				<div class="label" id="helpContent" style="padding: 0px 10px 20px 25px;text-align: justify;font: 15px/20px arial;height: calc(100% - 55px);overflow-y: auto;margin-right: 7px;">
-				</div>			
-			</div>
-		</div>
-		<!-- NOT USED ANYMORE -->
-		
+	
 		<div id="topBar_aboutContent" class="topBar_modal">
 			<div id="topBar_aboutContentWindow" class="topBar_modal-content">
 				<div class="ol-popup-closer fsContent_closer"></div>
@@ -60,7 +68,7 @@
 		
 		<div id="mainContainer">
 			<div id="topBar">
-				<div id="topBar_name"><img src="img/logo.png" /><div id="unlock"></div></div>
+				<div id="topBar_name"><img src="img/logo.png" alt=""/><div id="unlock"></div></div>
 				<div id="topBar_menu_button" class="topBarButtons"></div>
 				<div id="topBar_menu">
 					<div id="topBar_about" class="topBarButtonModal topBarButtons label">About</div>
@@ -75,7 +83,7 @@
 		
 			<div id="map">		
 				<div id="coordinates" class="label" title="Toggle decimal or deg/min/sec"></div>
-				<div id="BingMapsAttribution"><img src="img/BingMapsLogo.png" /></div>				
+				<div id="BingMapsAttribution"><img src="img/BingMapsLogo.png" alt=""/></div>				
 				<div id="layerConfigWindow">
 					<div id="layerIcon" title="Layer options">
 						<img id="layerIconImg" src="img/layers.png" alt=""/>
@@ -292,14 +300,14 @@
 						<div>
 							<div id="chartNumbersContainer">									
 								<fieldset class="fieldSet">
-									<legend><div id="chartNumbersTitle_label" class="label">Trendline attributes</div></legend>
+									<legend id="chartNumbersTitle_label" class="label">Trendline attributes</legend>
 										<div id="chartNumbers" class="defaultTextIndent attributes1"></div>
 								</fieldset>
 							</div>
 							
 							<div id="chartTrendlineTypeContainer" title="Change trendline type" class="label">									
 								<fieldset class="fieldSet">
-									<legend><div id="chartTrendlineType_label" class="label">Trendline type</div></legend>								
+									<legend id="chartTrendlineType_label" class="label">Trendline type</legend>								
 										<div id="chartTrendlineType" class="defaultTextIndent attributes1">
 											<input id="chartTrendlineType_N" type="radio" name="t_type" value="none">&nbsp;<span id="chartTrendlineType0_label" class="label">None</span><br>
 											<input id="chartTrendlineType_E" type="radio" name="t_type" value="exponential" checked>&nbsp;<span id="chartTrendlineType1_label" class="label">Exponential</span><br>
@@ -308,9 +316,19 @@
 								</fieldset>
 							</div>
 							
+							<div id="chartValuesContainer" title="Change radiance values weighting" class="label">									
+								<fieldset class="fieldSet">
+									<legend id="chartValuesType_label" class="label">Radiance values</legend>								
+										<div id="chartTrendlineType" class="defaultTextIndent attributes1">
+											<input id="chartValues_0" type="radio" name="v_type" value="1" checked>&nbsp;<span id="chartchartValues_0_label" class="label">Original</span><br>
+											<input id="chartValues_1" type="radio" name="v_type" value="0" >&nbsp;<span id="chartchartValues_1_label" class="label">Weighted by area</span><br>
+										</div>
+								</fieldset>
+							</div>
+							
 							<div id="exportContainer">
 								<fieldset class="fieldSet">
-									<legend><div id="exportTitle_label" class="label">Export options</div></legend>							
+									<legend id="exportTitle_label" class="label">Export options</legend>							
 									<div id="exportContent" class="defaultTextIndent attributes1" style="padding-top: 5px;">
 										
 										<button id="export_button" class="label ui-button ui-corner-all ui-widget">Export</button>

@@ -1,4 +1,12 @@
 Changelog
+1.0.3
+	New option when radiance sum is calculated to use weigtning by area
+1.0.2
+	Polygon size limit set to 10,000 km^2
+	Updated libraries.
+	About text change.
+1.0.1
+	Invalid coordinate search fix.
 1.0.0
 	Final version.
 0.7.6
