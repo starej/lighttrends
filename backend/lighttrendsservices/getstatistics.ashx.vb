@@ -1,20 +1,3 @@
-'############################################################
-'# 
-'# Radiance Light Trends is a software for selecting regions of Earth and examining the trend in light emissions observed by satellite.
-'# Copyright (C) 2019, German Research Centre for Geosciences <http://gfz-potsdam.de>. The application was programmed by Deneb, Geoinformation solutions, Jurij Stare s.p <starej@t-2.net>.
-'# 
-'# Parts of this program were developed within the context of the following publicly funded Project:
-'# - ERA-PLANET (via GEOEssential project), European Union’s Horizon 2020 research and innovation programme grant agreement no. 689443 <http://www.geoessential.eu/>
-'# 
-'# Licensed under the EUPL, Version 1.2 or - as soon they will be approved by the European Commission - subsequent versions of the EUPL (the "Licence"), complemented with the following provision: For the scientific transparency and verification of results obtained and communicated to the public after using a modified version of the work, You (as the recipient of the source code and author of this modified version, used to produce the published results in scientific communications) commit to make this modified source code available in a repository that is easily and freely accessible for a duration of five years after the communication of the obtained results.
-'# 
-'# You may not use this work except in compliance with the Licence.
-'# 
-'# You may obtain a copy of the Licence at: https://joinup.ec.europa.eu/software/page/eupl
-'# 
-'# Unless required by applicable law or agreed to in writing, software distributed under the Licence is distributed on an "AS IS" basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the Licence for the specific language governing permissions and limitations under the Licence.
-'# 
-'############################################################
 ﻿Imports System.IO
 Imports System.Threading
 Imports System.Web.Configuration
@@ -32,6 +15,9 @@ Public Class getstatistics
     Dim outputColumns As New List(Of String)
     Dim outputValuesPoint As New List(Of String)
     Dim outputValuesArea As New List(Of String)
+    Dim outputArea As Double
+    Dim outputAreaMaxPixels As Int64
+    Dim nonLTappWKT As Boolean = False
 
     Sub ProcessRequest(ByVal context As HttpContext) Implements IHttpHandler.ProcessRequest
         '
@@ -45,7 +31,7 @@ Public Class getstatistics
         'querytypet=[point|area]
         'rastercolumns=[semicolon seperated list of raster columns]; ie. "dmsp_u_f101992;dmsp_u_f101993;dmsp_u_f101994"
         'mask=[none|mask_year00] optional
-        'geometry=[lon,lat|LINESTRING(lon,lat ... lon,lat)]; "14.5,45.5" or "LINESTRING(2 46,4 46,4 45,2 46,2 46)"
+        'geometry=[lon,lat|WKT LINESTRING, POLYGON and MULTIPOLYGON geometry]; "14.5,45.5" or "LINESTRING(2 46,4 46,4 45,2 46,2 46)" or MULTIPOLYGON(((2 46,4 46,4 45,2 46,2 46)),((6 46,8 46,8 45,6 46,6 46))); (view WKT syntax at: https://en.wikipedia.org/wiki/Well-known_text_representation_of_geometry)
         '
         'OUTPUT AS JSON OR CSV (format=[json|csv])
         '
@@ -95,17 +81,39 @@ Public Class getstatistics
 
         'validate inputGeometry parameter
         If queryType = "area" Then
-            If inputGeometry.IndexOf("POINT") < 0 And inputGeometry.IndexOf("LINESTRING") < 0 Then
-                context.Response.Write("{""error"": ""geometry not valid""}")
-                Return
-            Else
-                Dim testInputGeometry As String = inputGeometry.Replace("POINT", "").Replace("LINESTRING", "").Replace("(", "").Replace(")", "").Replace(",", "").Replace(" ", "").Replace(".", "").Replace("-", "")
-                If Not Regex.IsMatch(testInputGeometry, "^[0-9 ]*$") Then
-                    context.Response.Write("{""error"": ""geometry not valid""}")
+
+            'validate WKT with PostGIS
+            Using cn As New NpgsqlConnection(WebConfigurationManager.ConnectionStrings("PostGIScon").ToString())
+                cn.Open()
+                Using Cmd As New NpgsqlCommand("SELECT ST_GeomFromText(@wkt)", cn)
+                    Cmd.Parameters.AddWithValue("@wkt", inputGeometry)
+
+                    Try
+                        Dim valid = Cmd.ExecuteNonQuery()
+                    Catch ex As Exception
+                        context.Response.Write("{""error"": ""geometry not valid. Hint: " & ex.Data("Hint").replace("""", "'") & " ""}")
+                        cn.Close()
+                        Return
+                    End Try
+
+                End Using
+                cn.Close()
+
+                'only support POLYGON and MULTIPOLYGON geometries
+                'if linestring is supplied, assume it's a polygon geometry and convert it 
+                If inputGeometry.IndexOf("LINESTRING") > -1 Then
+                    inputGeometry = inputGeometry.Replace("LINESTRING", "POLYGON(") & ")"
+                End If
+
+                If inputGeometry.IndexOf("POLYGON") < 0 Then
+                    context.Response.Write("{""error"": ""geometry not valid. Hint: area query only supports POLYGON and MULTIPOLYGON geometries""}")
                     Return
                 End If
-            End If
+
+
+            End Using
         Else
+            'point
             Dim testInputGeometry As String = inputGeometry.Replace(",", "").Replace(" ", "").Replace(".", "").Replace("-", "")
             If Not Regex.IsMatch(testInputGeometry, "^[0-9 ]*$") Then
                 context.Response.Write("{""error"": ""geometry not valid""}")
@@ -119,7 +127,6 @@ Public Class getstatistics
             context.Response.Write("{""error"": ""Rastercolumns not valid""}")
             Return
         End If
-
 
         'prepare rasterColumns input for select statements
         Dim rasterColumnsArray = rasterColumns.Split(";")
@@ -153,20 +160,24 @@ Public Class getstatistics
                 If column.IndexOf("viirs") > -1 Then
 
                     If mask <> "none" Then
-                        VIIRSselectColumns.Add("ST_SummaryStatsAgg(ST_Clip(ST_MapAlgebra(" & column & ", " & mask & ", '[rast1] * [rast2.val]'), ST_SetSRID(ST_MakePolygon(ST_GeomFromText('" & inputGeometry & "')),4326), TRUE), 1, TRUE, 1) as " & column)
+                        VIIRSselectColumns.Add("ST_SummaryStatsAgg(ST_Clip(ST_MapAlgebra(" & column & ", " & mask & ", '[rast1] * [rast2.val]'), ST_SetSRID(ST_GeomFromText('" & inputGeometry & "'),4326), TRUE), 1, TRUE, 1) as " & column)
                     Else
-                        VIIRSselectColumns.Add("ST_SummaryStatsAgg(ST_Clip(" & column & ", ST_SetSRID(ST_MakePolygon(ST_GeomFromText('" & inputGeometry & "')),4326), TRUE), 1, TRUE, 1) as " & column)
+                        VIIRSselectColumns.Add("ST_SummaryStatsAgg(ST_Clip(" & column & ", ST_SetSRID(ST_GeomFromText('" & inputGeometry & "'),4326), TRUE), 1, TRUE, 1) as " & column)
                     End If
 
                 End If
                 If column.IndexOf("dmsp") > -1 Then
-                    DMSPselectColumns.Add("ST_SummaryStatsAgg(ST_Clip(" & column & ", ST_SetSRID(ST_MakePolygon(ST_GeomFromText('" & inputGeometry & "')),4326), TRUE), 1, TRUE, 1) as " & column)
+                    DMSPselectColumns.Add("ST_SummaryStatsAgg(ST_Clip(" & column & ", ST_SetSRID(ST_GeomFromText('" & inputGeometry & "'),4326), TRUE), 1, TRUE, 1) as " & column)
                 End If
             Next
 
-            whereVIIRS = " FROM public.viirs WHERE ST_Intersects(ST_SetSRID(ST_MakePolygon(ST_GeomFromText('" & inputGeometry & "')),4326), viirs_npp_201204)"
-            whereDMSP = " FROM public.dmsp WHERE ST_Intersects(ST_SetSRID(ST_MakePolygon(ST_GeomFromText('" & inputGeometry & "')),4326), dmsp_u_f101992)"
+            whereVIIRS = " FROM public.viirs WHERE ST_Intersects(ST_SetSRID(ST_GeomFromText('" & inputGeometry & "'),4326), viirs_npp_201204)"
+            whereDMSP = " FROM public.dmsp WHERE ST_Intersects(ST_SetSRID(ST_GeomFromText('" & inputGeometry & "'),4326), dmsp_u_f101992)"
 
+            'gets area and pixels in selected area for use in weighted area ouput
+            Dim areaArr As List(Of Double) = getArea(inputGeometry, whereDMSP, whereVIIRS, rasterColumns)
+            outputArea = areaArr(0)
+            outputAreaMaxPixels = areaArr(1)
         End If
 
 
@@ -264,8 +275,6 @@ Public Class getstatistics
 
             If queryType = "area" Then
                 'sort lists first
-                Dim outputColumnsTemp As New List(Of String)
-                Dim outputValuesAreaTemp As New List(Of String)
 
                 Dim outputMerge As New List(Of String)
                 For i As Integer = 0 To outputColumns.Count - 1
@@ -281,6 +290,21 @@ Public Class getstatistics
                     outputColumns.Add(a(0))
                     outputValuesArea.Add(a(1))
                 Next
+            End If
+
+            'area of a pixel at equator in sq. km
+            Dim maxPixelArea As Double = 0.215139
+            Dim isVIIRS As Boolean = True
+            For i As Integer = 0 To outputColumns.Count - 1
+                If outputColumns(i).IndexOf("dmsp") > -1 Then
+                    isVIIRS = False
+                    Exit For
+                End If
+            Next
+
+            'dmsp pixel is twice as large
+            If isVIIRS = False Then
+                maxPixelArea = 0.860556
             End If
 
             If outputFormat = "json" Then
@@ -313,13 +337,17 @@ Public Class getstatistics
                             If count > 0 Then
                                 Dim sum As Double = Convert.ToDouble(dynObj("sum").ToString.Replace("{", "").Replace("}", ""))
                                 Dim mean As Double = Convert.ToDouble(dynObj("mean").ToString.Replace("{", "").Replace("}", ""))
+                                Dim sum_area_weighted As Double = Math.Round(Convert.ToDouble(dynObj("sum").ToString.Replace("{", "").Replace("}", "")) * ((outputArea / outputAreaMaxPixels) / maxPixelArea), 2)
+
                                 writer.WriteStartArray()
                                 writer.WriteValue(count)
                                 writer.WriteValue(Math.Round(sum, 2))
                                 writer.WriteValue(Math.Round(mean, 5))
+                                writer.WriteValue(sum_area_weighted)
                                 writer.WriteEndArray()
                             Else
                                 writer.WriteStartArray()
+                                writer.WriteNull()
                                 writer.WriteNull()
                                 writer.WriteNull()
                                 writer.WriteNull()
@@ -356,7 +384,7 @@ Public Class getstatistics
                     Next
 
                 ElseIf queryType = "area" Then
-                    output = "rasterColumn,count,sum,mean" & vbCrLf
+                    output = "rasterColumn,count,sum,mean,sum_area_weighted" & vbCrLf
 
                     For i As Integer = 0 To outputColumns.Count - 1
 
@@ -374,7 +402,9 @@ Public Class getstatistics
                             Dim mean As Double = Convert.ToDouble(dynObj("mean").ToString.Replace("{", "").Replace("}", ""))
                             mean = Math.Round(mean, 5)
 
-                            output += count & "," & sum & "," & mean & vbCrLf
+                            Dim sum_area_weighted As Double = Math.Round(Convert.ToDouble(dynObj("sum").ToString.Replace("{", "").Replace("}", "")) * ((outputArea / outputAreaMaxPixels) / maxPixelArea), 2)
+
+                            output += count & "," & sum & "," & mean & "," & sum_area_weighted & vbCrLf
                         Else
                             output += ",," & vbCrLf
                         End If
@@ -416,6 +446,7 @@ Public Class getstatistics
                         worksheet.Cell(1, 2).Value = "count"
                         worksheet.Cell(1, 3).Value = "sum"
                         worksheet.Cell(1, 4).Value = "mean"
+                        worksheet.Cell(1, 5).Value = "sum_area_weighted"
 
                         For i As Integer = 0 To outputColumns.Count - 1
                             'rasterColumn column
@@ -430,6 +461,7 @@ Public Class getstatistics
                                 worksheet.Cell(i + 2, 2).Value = count
                                 worksheet.Cell(i + 2, 3).Value = Math.Round(sum, 2)
                                 worksheet.Cell(i + 2, 4).Value = Math.Round(mean, 5)
+                                worksheet.Cell(i + 2, 5).Value = Math.Round(sum * ((outputArea / outputAreaMaxPixels) / maxPixelArea), 2)
                             End If
                         Next
                     End If
@@ -651,6 +683,41 @@ Public Class getstatistics
 
 
         Dim result As Object() = {columns, values}
+
+        Return result
+    End Function
+
+    Private Function getArea(inputGeometry As String, whereDMSP As String, whereVIIRS As String, rasterColumns As String) As List(Of Double)
+        Dim result As New List(Of Double)
+
+        Dim whereString As String = ""
+        Dim rasterIndex As String = "viirs_npp_201500"
+        If rasterColumns.IndexOf("viirs") >= 0 Then
+            whereString = whereVIIRS
+        Else
+            whereString = whereDMSP
+            rasterIndex = "dmsp_u_f101992"
+        End If
+        Try
+            Using cn As New NpgsqlConnection(WebConfigurationManager.ConnectionStrings("PostGIScon").ToString())
+                cn.Open()
+
+                Using Cmd As New NpgsqlCommand("SELECT ST_area(ST_SetSrid(ST_geomfromText('" & inputGeometry & "'), 4326), true) / 1000000 as area, " _
+                    & "(ST_SummaryStatsAgg(ST_Clip(" & rasterIndex & ", ST_SetSRID(ST_GeomFromText('" & inputGeometry & "'),4326), TRUE), 1, TRUE, 1)).count as pixels " & whereString, cn)
+
+                    Using reader As NpgsqlDataReader = Cmd.ExecuteReader()
+                        While reader.Read()
+                            result.Add(reader.GetValue(0))
+                            result.Add(reader.GetValue(1))
+                        End While
+                    End Using
+
+                End Using
+                cn.Close()
+            End Using
+        Catch ex As Exception
+
+        End Try
 
         Return result
     End Function
